@@ -1,20 +1,28 @@
-
-
+hubbert@i4ops.com
+385-321-0757
 Website - i4ops.com
 
+.................
+
 Briefing (21 min) https://www.youtube.com/watch?v=QrHHuFw-AHI 
-
 Demo1 (6 min) https://youtu.be/MPvPiDJSvIo 
-
 business brief (3 min) https://youtu.be/bsn_7L-9Nps
-
 https://youtu.be/RhH8ASixAqE -- Wikipedia List Data Breach (2min)
 
+..............................
+install on your PC
+curl https://install.zerotier.com/ | bash
+service --status-all   >>> should show zerotier-one
+zerotier-cli info
+zerotier-cli join 1c33c1ced0e8aa78
 
-
-zerotier network ID -- 1c33c1ced0e8aa78
-server u7
-server u8
-server u9
+this will join you to a zerotier network
+you should be able to ping/login in
+server u7   172.26.241.125
+server u8   172.26.24.155
+server u9   172.26.241.125
 
 all have login -- anu     pass -- anupass   sudo group
+
+you can install, uninstall, modify, delete anything you like on these -- LMK if you want to re-image
+
