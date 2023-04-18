@@ -20,7 +20,7 @@ this will join you to a zerotier network
 you should be able to ping/login in
 server u7   172.26.241.125
 server u8   172.26.24.155
-server u9   172.26.241.125
+server u9   172.26.241.201
 
 all have login -- anu     pass -- anupass   sudo group
 
