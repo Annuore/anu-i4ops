@@ -18,7 +18,7 @@ zerotier-cli join 1c33c1ced0e8aa78
 
 this will join you to a zerotier network
 you should be able to ping/login in
-server u7   172.26.241.125
+server u7   172.26.20.66
 server u8   172.26.24.155
 server u9   172.26.241.201
 
