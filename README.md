@@ -36,6 +36,7 @@ This role installs the k0s cluster
 * [**Post-cluster-config**](roles/post-cluster-config)
 This role install argocd and metal-lb.
 * [**Reset**](roles/reset)
+This role deletes the cluster, directories, and stops k0s service on all nodes.
 
 ## Instructions <a id='instructions'></a>
 You can find a user guide on how to use this playbook in the [k0s documentation](https://docs.k0sproject.io/main/examples/ansible-playbook/).
