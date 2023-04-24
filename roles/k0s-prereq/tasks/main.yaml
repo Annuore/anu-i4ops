@@ -1,0 +1,54 @@
+- name: Create k0s directories
+  become: true 
+  file: 
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_items: 
+  - "{{ k0s_config_dir }}"
+  - "{{ k0s_data_dir }}"
+  - "{{ k0s_libexec_dir }}"
+  
+# - debug: 
+#     msg: "{{ k0s_config_dir }} "
+- name: Generate default k0s config file
+  become: true
+  block: 
+    - name: Create default k0s config
+      register: default_k0s_config
+      command: k0s default-config > {{ k0s_config_dir }}/k0s.yaml
+    - name: Store default k0s config
+      copy: 
+        dest: "{{ k0s_config_dir }}/k0s.yaml"
+        content: "{{ default_k0s_config.stdout }}"
+        mode: 0600
+# - debug: 
+#     msg: "{{ default_k0s_config.stdout }} "
+# - name: Install kubens which helps you switch between k8s namespaces
+#   shell: |
+#          curl -sS https://webi.sh/kubens | sh
+- name: Install kubectl
+  include_tasks: kubectl.yaml
+- name: Install helm if not exists
+  unarchive:
+    src: https://get.helm.sh/helm-v3.11.0-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm
+- name: ensure python3 is installed
+  become: yes
+  ansible.builtin.package:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: install kubernetes pip package
+  pip:
+    name: kubernetes
+    state: present

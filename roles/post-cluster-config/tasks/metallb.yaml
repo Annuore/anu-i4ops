@@ -1,0 +1,61 @@
+---
+- name: get metallb url 
+  get_url:
+    url: https://raw.githubusercontent.com/metallb/metallb/v0.13.9/config/manifests/metallb-native.yaml 
+    dest: ~{{ ansible_user }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+- name: export config file to env 
+  become: false 
+  shell: export KUBECONFIG=~{{ ansible_user }}/k0s-kubeconfig.yaml
+- name: install metallb 
+  kubernetes.core.k8s:
+    kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    state: present 
+    src: ~{{ ansible_user }}/metallb-native.yaml 
+  register: metallb_pods
+- name: wait for pods to come up
+  shell: kubectl get pods -o json -n metalb-system
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+- name: make metallb directory 
+  file: 
+    path: ~{{ ansible_user }}/metallb
+    state: directory 
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+  register: metallb_dir
+- name: write config into metallb dir 
+  shell: |
+      cat <<EOF > ~{{ ansible_user }}/metallb/ipddr.yaml
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: metallb-pool
+        namespace: metallb-system
+      spec:
+        addresses:
+        - 172.26.24.155
+        - 172.26.241.201
+      EOF 
+- name: write advertise metallb into metallb dir 
+  shell: | 
+    cat <<EOF > ~{{ ansible_user }}/metallb/l2advert.yaml
+    apiVersion: metallb.io/v1beta1
+    kind: L2Advertisement
+    metadata:
+      name: l2advert
+      namespace: metallb-system
+    spec:
+      ipAddressPools:
+      - metallb-pool
+  
+- name: apply CRDs 
+  kubernetes.core.k8s:
+      kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+      state: present 
+      src: ~{{ ansible_user }}/metallb/ipddr.yaml
+      src: ~{{ ansible_user }}/metallb/l2advert.yaml
+

@@ -1,0 +1,42 @@
+# - name: Install apt-transport-https
+#   apt: 
+#     pkg: 
+#     - apt-transport-https
+#     - curl
+#     - ca-certificates
+#     state: present
+# - name: Run the equivalent of "apt-get update"
+#   apt:
+#     update_cache: yes
+# - name: add gpg key for kubernetes repo
+#   apt_key: 
+#     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+#     state: present
+# - name: add kubernetes apt repo
+#   apt_repository:
+#     repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+#     state: present
+#     filename: kubernetes
+#     update_cache: true
+# - name: Install kubectl
+#   apt: 
+#     name: kubectl
+#     state: present 
+#     update_cache: true 
+
+
+--- 
+
+- name: kubectl | install kubectl localy
+  get_url:
+    url: "https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl"
+    dest: "/usr/local/bin/kubectl"
+    mode: 0755
+    owner: root
+    group: root
+    force: yes
+- name: test kubectl 
+  command: kubectl --help
+  register: kubectl
+- debug:  
+    msg: "{{ kubectl }}"

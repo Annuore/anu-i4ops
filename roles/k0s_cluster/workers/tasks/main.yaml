@@ -1,0 +1,32 @@
+---
+
+- name: Copy worker token from localhost
+  copy:
+    src: "{{ worker_token_dir }}"
+    dest: "{{ k0s_config_dir }}/worker-token"
+    mode: 0600
+
+- name: copy config file to home directory 
+  copy: 
+    src: "{{ artifacts_dir }}/k0s-kubeconfig.yaml"
+    dest: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
+- name: Create k0s worker service with install command
+  register: install_worker_cmd
+  command: k0s install worker --token-file {{ k0s_config_dir }}/worker-token 
+  changed_when: install_worker_cmd | length > 0
+
+- name: Enable and check k0s service
+  become: true
+  systemd:
+    name: k0sworker
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: export config file to env 
+  become: false
+  shell: export KUBECONFIG=~{{ ansible_user}}/k0s-kubeconfig.yaml

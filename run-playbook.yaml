@@ -1,0 +1,32 @@
+---  
+
+- hosts: all 
+  name: download required downloadaries and software on all nodes 
+  become:  true
+  roles:
+    - role: k0s-download
+      tags: k0s-download
+    - role: k0s-prereq
+      tags: prereq
+    
+- hosts: master 
+  name: configure k0s control plane node 
+  gather_facts: yes
+  become: yes 
+  roles:
+    - role: k0s_cluster/initial_controller
+
+- hosts: workers 
+  name: configure workers to join the cluster 
+  become: yes
+  serial: 1
+  roles:
+    - role: k0s_cluster/workers
+
+- hosts: u9
+  name: cluster administration
+  gather_facts: yes
+  become: false
+  roles: 
+    - role: post-cluster-config 
+

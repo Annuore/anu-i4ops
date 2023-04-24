@@ -1,0 +1,92 @@
+---
+
+- name: Create k0s initial controller service with install command
+  register: install_initial_controller_cmd
+  command: k0s install controller --config {{ k0s_config_dir }}/k0s.yaml 
+  changed_when: install_initial_controller_cmd | length > 0
+
+- name: Setup custom environment variables for systemd unit
+  include_role:
+    name: env_config
+
+- name: Enable and check k0s service
+  systemd:
+    name: k0scontroller
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: Wait for k8s apiserver
+  wait_for:
+    host: localhost
+    port: 6443
+    delay: 15
+    timeout: 180
+
+- name: Create worker join token
+  register: worker_join_token
+  command: k0s token create --role worker > {{ k0s_config_dir }}/worker_token
+  changed_when: worker_join_token | length > 0
+- name: store and send worker token to local host 
+  block:
+    - name: store worker token 
+      copy:
+        dest: "{{ k0s_config_dir }}/worker_token"
+        content: "{{ worker_join_token.stdout }}"
+        mode: 0750
+    - name: Store worker join token
+      fetch:
+        src: "{{ k0s_config_dir }}/worker_token"
+        dest: /tmp
+- name: Print worker token
+  debug:
+    msg: "k0s worker join token is: {{ worker_join_token.stdout }}"
+
+- name: Create controller join token
+  register: controller_join_token
+  command: k0s token create --role controller > {{ k0s_config_dir }}/controller_token
+  changed_when: controller_join_token | length > 0
+- name: store and send controller token
+  block:
+    - name: store controller  token 
+      copy:
+        dest: "{{ k0s_config_dir }}/controller_token"
+        content: "{{ controller_join_token.stdout }}"
+        mode: 0750
+    - name: Store controller join token
+      fetch:
+        src: "{{ k0s_config_dir }}/controller_token"
+        dest: /tmp
+- name: Print controller token
+  debug:
+    msg: "k0s controller join token is: {{ controller_join_token.stdout }}"
+
+- name: Copy config file to user home directory
+  copy:
+    src: "{{ k0s_data_dir }}/pki/admin.conf"
+    dest: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    owner: "{{ ansible_user }}"
+    remote_src: yes
+    mode: 0755
+
+- name: Set controller IP in kubeconfig
+  replace:
+    path: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    regexp: 'localhost'
+    replace: "{{ ansible_host }}"
+
+- name: export config file to env 
+  become: false 
+  shell: export KUBECONFIG=~{{ ansible_user}}/k0s-kubeconfig.yaml
+
+- name: Copy kubeconfig
+  fetch:
+    src: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    dest: "{{ artifacts_dir }}/k0s-kubeconfig.yaml"
+    flat: yes
+    validate_checksum: no
+  become: no
+
+- name: "print kubeconfig command"
+  debug:
+    msg: "To use Cluster: export KUBECONFIG={{ artifacts_dir }}/k0s-kubeconfig.yaml"

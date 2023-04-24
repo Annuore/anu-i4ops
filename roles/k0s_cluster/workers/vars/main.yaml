@@ -1,0 +1,3 @@
+--- 
+worker_token_dir: /tmp/{{ groups.master[0] }}/etc/k0s/worker_token
+artifacts_dir: "{{ inventory_dir }}/artifacts"
