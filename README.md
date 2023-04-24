@@ -5,6 +5,7 @@
 - [**Included Playbooks**](#ip)
 - [**Roles**](#roles)
 - [**Instructions**](#instructions)
+
 ## Project Overview <a id='project'></a>
 This repo creates a kubernetes cluster on bare metal servers using kubernetes distro [k0s](https://github.com/k0sproject/k0s)
 This playbook is partly based on the official repo of [k0s-ansible](https://github.com/movd/k0s-ansible).
@@ -26,15 +27,15 @@ This playbook deletes k0s all its files, directories and services from all hosts
 ## Roles <a id='roles'></a>
 [**Env_config**](roles/env_config)
 This sets the environmental variables for the k0s service based on architecture of the host
-[**k0s-download**](roles/k0s-download)
+[**K0s-download**](roles/k0s-download)
 This role installs the k0s binary
-[**k0s-prereq**](roles/k0s-prereq)
+[**K0s-prereq**](roles/k0s-prereq)
 This role installs all softwares and dependencies required for k0s to run.
-[**k0s_cluster**](roles/k0s_cluster)
+[**K0s_cluster**](roles/k0s_cluster)
 This role installs the k0s cluster
-[**post-cluster-config**](roles/post-cluster-config)
+[**Post-cluster-config**](roles/post-cluster-config)
 This role install argocd and metal-lb.
-
+[**Reset**](roles/reset)
 ## Instructions <a id='instructions'></a>
 You can find a user guide on how to use this playbook in the [k0s documentation](https://docs.k0sproject.io/main/examples/ansible-playbook/).
 - Edit the [hosts](hosts) file to add your hosts. Change the `anisble_user` and `ansible_host` to fit your environment. This file must include at least one `initial_controller` and one `worker` node.
@@ -47,7 +48,7 @@ Alternatively, you can add the path using `private_key_file` to ansible config f
 - Run the Playbook!
 
 
-
+..............
 
 hubbert@i4ops.com
 385-321-0757

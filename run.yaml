@@ -9,7 +9,7 @@
     - role: k0s-prereq
       tags: prereq
     
-- hosts: master 
+- hosts: initial_controller 
   name: configure k0s control plane node 
   gather_facts: yes
   become: yes 
@@ -23,7 +23,7 @@
   roles:
     - role: k0s_cluster/workers
 
-- hosts: u9
+- hosts: workers
   name: cluster administration
   gather_facts: yes
   become: false
