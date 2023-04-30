@@ -18,9 +18,9 @@ $ ansible-playbook run.yaml -i hosts
 Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `initial_controller` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. The `inital_controller` creates tokens that get written to the nodes when the playbook is executed.
 
-[reset.yaml](reset.yaml):
+[`reset.yaml`](reset.yaml):
 ```ShellSession
-$ ansible-playbook reset.yml -i hosts
+$ ansible-playbook reset.yaml -i hosts
 ```
 This playbook deletes k0s all its files, directories and services from all hosts.
 
@@ -40,13 +40,13 @@ This role deletes the cluster, directories, and stops k0s service on all nodes.
 
 ## Instructions <a id='instructions'></a>
 You can find a user guide on how to use this playbook in the [k0s documentation](https://docs.k0sproject.io/main/examples/ansible-playbook/).
-- Edit the [hosts](hosts) file to add your hosts. Change the `anisble_user` and `ansible_host` to fit your environment. This file must include at least one `initial_controller` and one `worker` node.
-- Generate your ssh key add your private key to ssh agent. Run the following 
+- Edit the [hosts](hosts) file to add your hosts. Change the `ansible_user` and `ansible_host` to fit your environment. This file must include at least one `initial_controller` and one `worker` node.
+- Generate your ssh key . To add your private key to ssh agent, run, 
 ```ShellSession
 $ ssh-agent bash
 $ sudo ssh-add <path/to/private/key>
 ``` 
-Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
+    Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
 - Run the Playbook!
 
 
