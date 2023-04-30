@@ -1,7 +1,7 @@
 ---  
 
 - hosts: all 
-  name: download required downloadaries and software on all nodes 
+  name: download required binaries and software on all nodes 
   become:  true
   roles:
     - role: k0s-download
