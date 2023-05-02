@@ -2,7 +2,8 @@ hubbert@i4ops.com
 385-321-0757
 Website - i4ops.com
 .................
-
+ansible-playbook run.yaml -i hosts -K --ask-pass
+ansible-playbook reset.yaml -i hosts -K --ask-pass
 Wilde6666!
 
 .................
