@@ -47,7 +47,7 @@ You can find a user guide on how to use this playbook in the [k0s documentation]
 $ ssh-agent bash
 $ sudo ssh-add <path/to/private/key>
 ``` 
-    Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
+Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
 - Run the Playbook!
 - To access the cluster run 
 ``` ShellSession
