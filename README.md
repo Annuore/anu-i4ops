@@ -73,6 +73,8 @@ $ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"
 - [**K0s**](https://docs.k0sproject.io/v1.23.6+k0s.2/)
 - [**Metal LB**](https://metallb.universe.tf/configuration/)
 - [***ArgoCD**](https://argo-cd.readthedocs.io/en/stable/)
+
+
 ..............
 
 hubbert@i4ops.com
