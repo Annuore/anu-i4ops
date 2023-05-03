@@ -12,19 +12,3 @@ u9
 
 
 
-# --- 
-# all: 
-#   children:
-#     master:
-#       hosts:
-#         u8:
-#     workers:
-#       hosts: 
-#         u9:
-#   hosts:
-#     u8:
-#       ansible_host: 172.26.24.155
-#     u9: 
-#       ansible_host: 172.26.241.201
-#   vars: 
-#     ansible_user: anu

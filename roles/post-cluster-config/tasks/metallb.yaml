@@ -6,19 +6,22 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
-- name: export config file to env 
-  become: false 
-  shell: export KUBECONFIG=~{{ ansible_user }}/k0s-kubeconfig.yaml
 - name: install metallb 
   kubernetes.core.k8s:
     kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
     state: present 
     src: ~{{ ansible_user }}/metallb-native.yaml 
   register: metallb_pods
-- name: wait for pods to come up
-  shell: kubectl get pods -o json -n metalb-system
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+- name: wait for metallb pods
+  kubernetes.core.k8s_info:
+    kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    kind: Pod 
+    wait: yes 
+    wait_sleep: 10
+    wait_timeout: 90
+    label_selectors: 
+      - "app = metallb"
+  register: wait 
 - name: make metallb directory 
   file: 
     path: ~{{ ansible_user }}/metallb
@@ -26,20 +29,18 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
-  register: metallb_dir
+    register: metallb_dir
 - name: write config into metallb dir 
   shell: |
-      cat <<EOF > ~{{ ansible_user }}/metallb/ipddr.yaml
-      apiVersion: metallb.io/v1beta1
-      kind: IPAddressPool
-      metadata:
-        name: metallb-pool
-        namespace: metallb-system
-      spec:
-        addresses:
-        - 172.26.24.155
-        - 172.26.241.201
-      EOF 
+    cat <<EOF > ~{{ ansible_user }}/metallb/ipddr.yaml
+    apiVersion: metallb.io/v1beta1
+    kind: IPAddressPool
+    metadata:
+      name: metallb-pool
+      namespace: metallb-system
+    spec:
+      addresses:
+      - 192.168.1.0/24
 - name: write advertise metallb into metallb dir 
   shell: | 
     cat <<EOF > ~{{ ansible_user }}/metallb/l2advert.yaml
@@ -51,11 +52,17 @@
     spec:
       ipAddressPools:
       - metallb-pool
-  
-- name: apply CRDs 
-  kubernetes.core.k8s:
+- name: configure metallb 
+  block:
+  - name: apply the ip address pool   
+    kubernetes.core.k8s:
+    kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+    state: present 
+        src: ~{{ ansible_user }}/metallb/ipddr.yaml
+  - name: apply the layer 2 advertisement 
+    kubernetes.core.k8s:
       kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
       state: present 
-      src: ~{{ ansible_user }}/metallb/ipddr.yaml
-      src: ~{{ ansible_user }}/metallb/l2advert.yaml
+      src: ~{{ ansible_user }}/metallb/l2advert.yaml    
+      
 

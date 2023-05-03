@@ -1,6 +1,0 @@
---- 
-- name: Download k0s binary for amd64
-  become: false
-  shell: |
-    curl -ssLv https://get.k0s.sh/ | sudo sh
-   

@@ -5,6 +5,7 @@
 - [**Included Playbooks**](#ip)
 - [**Roles**](#roles)
 - [**Instructions**](#instructions)
+- [**Resources**](#res)
 
 ## Project Overview <a id='project'></a>
 This repo creates a kubernetes cluster on bare metal servers using kubernetes distro [k0s](https://github.com/k0sproject/k0s).
@@ -48,8 +49,30 @@ $ sudo ssh-add <path/to/private/key>
 ``` 
     Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
 - Run the Playbook!
+- To access the cluster run 
+``` ShellSession
+$ export KUBECONFIG=$HOME/k0s-kubeconfig.yaml
+``` 
 
+- To get argocd's initial password for admin user. 
+```ShellSession
+$  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+``` 
 
+### Optional
+
+- You can patch the argocd service to use the load balancer service type.
+```ShellSession
+$ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+``` 
+[Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI. 
+
+- To force Metallb to use a specific IP, add the annotation ` metallb.universe.tf/loadBalancerIPs: <IP>` to the argocd service.
+
+## Resources <a id='res'></a>
+- [**K0s**](https://docs.k0sproject.io/v1.23.6+k0s.2/)
+- [**Metal LB**](https://metallb.universe.tf/configuration/)
+- [***ArgoCD**](https://argo-cd.readthedocs.io/en/stable/)
 ..............
 
 hubbert@i4ops.com
