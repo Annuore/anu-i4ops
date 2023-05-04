@@ -29,7 +29,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
-    register: metallb_dir
+  register: metallb_dir
 - name: write config into metallb dir 
   shell: |
     cat <<EOF > ~{{ ansible_user }}/metallb/ipddr.yaml
@@ -56,9 +56,9 @@
   block:
   - name: apply the ip address pool   
     kubernetes.core.k8s:
-    kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
-    state: present 
-        src: ~{{ ansible_user }}/metallb/ipddr.yaml
+      kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml
+      state: present 
+      src: ~{{ ansible_user }}/metallb/ipddr.yaml
   - name: apply the layer 2 advertisement 
     kubernetes.core.k8s:
       kubeconfig: ~{{ ansible_user }}/k0s-kubeconfig.yaml

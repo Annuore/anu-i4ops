@@ -1,5 +1,5 @@
-# - name: Install Metallb 
-#   include_tasks: metallb.yaml
+- name: Install Metallb 
+  include_tasks: metallb.yaml
 
 - name: Install argocd 
   include_tasks: argocd.yaml
