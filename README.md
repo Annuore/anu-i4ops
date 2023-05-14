@@ -14,14 +14,14 @@ This playbook is partly based on the official repo of [k0s-ansible](https://gith
 ## Included Playbooks <a id='ip'></a>
 [`run.yaml`](run.yaml):
 ```ShellSession
-$ ansible-playbook run.yaml -i hosts
+ansible-playbook run.yaml -i hosts
 ``` 
 Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `initial_controller` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. The `inital_controller` creates tokens that get written to the nodes when the playbook is executed.
 
 [`reset.yaml`](reset.yaml):
 ```ShellSession
-$ ansible-playbook reset.yaml -i hosts
+ansible-playbook reset.yaml -i hosts
 ```
 This playbook deletes k0s all its files, directories and services from all hosts.
 
@@ -44,26 +44,27 @@ You can find a user guide on how to use this playbook in the [k0s documentation]
 - Edit the [hosts](hosts) file to add your hosts. Change the `ansible_user` and `ansible_host` to fit your environment. This file must include at least one `initial_controller` and one `worker` node.
 - Generate your ssh key . To add your private key to ssh agent, run, 
 ```ShellSession
-$ ssh-agent bash
-$ sudo ssh-add <path/to/private/key>
+ssh-agent bash
+sudo ssh-add <path/to/private/key>
+ssh-copy-id -i <path/to/public/key> hostname@remote-server-ip
 ``` 
 Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
 - Run the Playbook!
 - To access the cluster run 
 ``` ShellSession
-$ export KUBECONFIG=$HOME/k0s-kubeconfig.yaml
+export KUBECONFIG=$HOME/k0s-kubeconfig.yaml
 ``` 
 
 - To get argocd's initial password for admin user. 
 ```ShellSession
-$  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ``` 
 
 ### Optional
 
 - You can patch the argocd service to use the load balancer service type.
 ```ShellSession
-$ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ``` 
 [Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI. 
 
@@ -75,33 +76,5 @@ $ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"
 - [**ArgoCD**](https://argo-cd.readthedocs.io/en/stable/)
 
 
-..............
 
-hubbert@i4ops.com
-385-321-0757
-Website - i4ops.com
-
-.................
-
-Briefing (21 min) https://www.youtube.com/watch?v=QrHHuFw-AHI 
-Demo1 (6 min) https://youtu.be/MPvPiDJSvIo 
-business brief (3 min) https://youtu.be/bsn_7L-9Nps
-https://youtu.be/RhH8ASixAqE -- Wikipedia List Data Breach (2min)
-
-..............................
-install on your PC
-curl https://install.zerotier.com/ | bash
-service --status-all   >>> should show zerotier-one
-zerotier-cli info
-zerotier-cli join 1c33c1ced0e8aa78
-
-this will join you to a zerotier network
-you should be able to ping/login in
-server u7   172.26.20.66
-server u8   172.26.24.155
-server u9   172.26.241.201
-
-all have login -- anu     pass -- anupass   sudo group
-
-you can install, uninstall, modify, delete anything you like on these -- LMK if you want to re-image
 

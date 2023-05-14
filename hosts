@@ -1,14 +1,15 @@
 [initial_controller]
-u8 ansible_host=172.26.24.155 ansible_user=anu
+u6 ansible_host=172.26.204.10 ansible_user=hubbert
 
 [workers]
-u9 ansible_host=172.26.241.201 ansible_user=anu
+u7 ansible_host=172.26.166.12 ansible_user=hubbert
+u9 ansible_host=172.26.86.100 ansible_user=hubbert
 
 
 [all]
-u8
+u6
+u7
 u9
-
 
 
 

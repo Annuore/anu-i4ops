@@ -4,7 +4,7 @@
   copy:
     src: "{{ worker_token_dir }}"
     dest: "{{ k0s_config_dir }}/worker-token"
-    mode: 0600
+    mode: 0700
 
 - name: copy config file to home directory 
   copy: 

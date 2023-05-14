@@ -16,10 +16,17 @@
   roles:
     - role: k0s_cluster/initial_controller
 
+# - hosts: controller 
+#   name: add controller(s)
+#   become: yes
+#   serial: 1
+#   roles:
+#     - role: k0s_cluster/controllers
+
 - hosts: workers 
   name: configure workers to join the cluster 
   become: yes
-  serial: 1
+  # serial: 1
   roles:
     - role: k0s_cluster/workers
 
