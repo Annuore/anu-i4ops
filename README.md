@@ -31,7 +31,7 @@ This role installs the K3s binary.
 * [**K3s-prereq**](roles/k3s-prereq)
 This role installs all softwares and dependencies required for K3s to run.
 * [**K3s_cluster**](roles/k3s_cluster)
-This role deploys the K3s cluster. It starts the k3s service on the master node, generates a join token for the workers and then adds the workers to the cluster. It also generates the kube-vip rRBAC manifest and adds the daemonset manifest to the auto-deploy directory.
+This role deploys the K3s cluster. It starts the k3s service on the master node, generates a join token for the workers and then adds the workers to the cluster. It also generates the kube-vip RBAC manifest and adds the daemonset manifest to the auto-deploy directory.
 * [**Post-cluster-config**](roles/post-cluster-config)
 This role install argocd and rancher management server via helm. 
 * [**Reset**](roles/reset)
@@ -70,7 +70,7 @@ kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ``` 
 [Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI. 
-[Click here](https://docs.k3s.io/advanced) for k3s advcaned configuration.
+[Click here](https://docs.k3s.io/advanced) for k3s advanced configuration.
 
 ## Resources <a id='res'></a>
 - [**K3s**](https://docs.K3sproject.io/v1.23.6+K3s.2/)
