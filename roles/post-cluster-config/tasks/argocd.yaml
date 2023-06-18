@@ -1,0 +1,23 @@
+- name: get argocd url 
+  get_url:  
+    url: https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/ha/install.yaml
+    dest: ~{{ ansible_user }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+- name: create argocd namespace 
+  kubernetes.core.k8s:
+    kubeconfig: ~{{ ansible_user }}/.kube/config
+    state: present 
+    api_version: v1
+    kind: Namespace 
+    name: argocd 
+- name: install argocd
+  kubernetes.core.k8s:
+    kubeconfig: ~{{ ansible_user }}/.kube/config
+    state: present 
+    src: ~{{ ansible_user }}/install.yaml
+    namespace: argocd
+  register: argocd
+
+
