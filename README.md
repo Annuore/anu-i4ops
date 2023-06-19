@@ -39,6 +39,7 @@ This role deletes the cluster, directories, and stops K3s service on all nodes.
 
 ## Instructions <a id='instructions'></a>
 - Edit the [hosts.ini](hosts.ini) file to add your hosts. Change the `ansible_user` and `ansible_host` to fit your environment. This file must include at least one `master` and one `worker` node.
+- Optionally, edit the final play that has the *post-cluster-config* role in the [run.yaml](run.yaml) to only one of your workers
 - Generate your ssh key . To add your private key to ssh agent, run, 
 ```ShellSession
 ssh-agent bash
