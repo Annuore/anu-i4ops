@@ -1,10 +1,9 @@
-i4 kmod
-**Start and stop**
+**i4 kmod -- Start and stop**
 $ insmod ikmod.ko
 $ lsmod | grep i4
 $ rmmod i4kmod
 
-**Deploy and use**
+**i4kmod -- Deploy and use**
 $ mount /dev/sdb /i4
 $ touch /i4/.i4
 $ insmod i4kmod.ko
