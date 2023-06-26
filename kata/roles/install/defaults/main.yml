@@ -1,0 +1,1 @@
+kata_dir: ~{{ ansible_user }}/kata-containers

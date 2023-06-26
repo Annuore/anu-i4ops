@@ -1,0 +1,28 @@
+- name: delete kata RBAC 
+  kubernetes.core.k8s: 
+    kubeconfig: ~{{ ansible_user }}/.kube/config
+    state: absent 
+    src: "{{ kata_dir }}/tools/packaging/kata-deploy/kata-rbac/base/kata-rbac.yaml"
+
+- name: apply kata-cleanup kustomize directory
+  become: false  
+  shell: | 
+    export KUBECONFIG=$HOME/.kube/config
+    kubectl delete -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/kata-deploy/base/kata-deploy.yaml
+    kubectl apply -k {{ kata_dir }}/tools/packaging/kata-deploy/kata-cleanup/overlays/k3s
+    kubectl delete -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/kata-rbac/base/kata-rbac.yaml
+    kubectl delete -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
+
+- name: get kata runtime classes url 
+  get_url:  
+    url: https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
+    dest: ~{{ ansible_user }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+- name: apply runtime classes
+  kubernetes.core.k8s:
+    kubeconfig: ~{{ ansible_user }}/.kube/config
+    state: present 
+    src: ~{{ ansible_user }}/kata-runtimeClasses.yaml

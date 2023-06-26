@@ -1,5 +1,4 @@
-# - name: Install Metallb 
-#   include_tasks: metallb.yaml
+
 - name: install python3 
   become: yes
   ansible.builtin.package:
@@ -20,3 +19,4 @@
 
 - name: Install rancher management server 
   include_tasks: rancher_server.yaml
+

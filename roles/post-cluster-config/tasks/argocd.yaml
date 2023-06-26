@@ -1,23 +1,31 @@
-- name: get argocd url 
-  get_url:  
-    url: https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/ha/install.yaml
-    dest: ~{{ ansible_user }}
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0777
-- name: create argocd namespace 
-  kubernetes.core.k8s:
-    kubeconfig: ~{{ ansible_user }}/.kube/config
-    state: present 
-    api_version: v1
-    kind: Namespace 
+--- 
+
+- name: add repo 
+  kubernetes.core.helm_repository: 
+    repo_name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+    kubeconfig_path:  /home/i4/.kube/config
+    repo_state: present
+    
+- name: install argocd using helm 
+  kubernetes.core.helm: 
     name: argocd 
-- name: install argocd
-  kubernetes.core.k8s:
-    kubeconfig: ~{{ ansible_user }}/.kube/config
-    state: present 
-    src: ~{{ ansible_user }}/install.yaml
-    namespace: argocd
-  register: argocd
-
-
+    chart_ref: argo/argo-cd
+    chart_version: 5.31.0
+    values:
+      server:
+        replicas: 2
+        extraArgs:
+        - --insecure
+        service: 
+          type: LoadBalancer
+        ingress: 
+          enabled: true
+          annotations: 
+            kubernetes.io/ingress.allow-http: "true"
+          ingressClassName: traefik
+          hosts:
+            - argo.local      
+    release_namespace: argocd
+    create_namespace: true
+    kubeconfig_path: /home/i4/.kube/config
