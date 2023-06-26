@@ -8,13 +8,13 @@
 - [**Resources**](#res)
 
 ## Project Overview <a id='project'></a>
-This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It also includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI).
+This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI). It also includes a [Kata](./kata/) playbook that deploys kata into the cluster.
 
 
 ## Included Playbooks <a id='ip'></a>
 [`run.yaml`](run.yaml):
 ```ShellSession
-ansible-playbook run.yaml -i hosts
+ansible-playbook run.yaml -i hosts.ini
 ``` 
 Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `master` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. To add more nodes to the exsiting cluster, visit the k3s [HA embedded etcd](https://docs.k3s.io/datastore/ha-embedded) for details.

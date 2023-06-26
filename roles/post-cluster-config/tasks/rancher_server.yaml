@@ -7,6 +7,7 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
+
 - name: create cert-manager namespace 
   kubernetes.core.k8s:
     kubeconfig: ~{{ ansible_user }}/.kube/config
@@ -14,21 +15,23 @@
     api_version: v1
     kind: Namespace 
     name: cert-manager 
+
 - name: install cert-manager
   kubernetes.core.k8s:
     kubeconfig: ~{{ ansible_user }}/.kube/config
     state: present 
     src: ~{{ ansible_user }}/cert-manager.yaml
     namespace: cert-manager
+
 - name: wait for cert-manager pods
   kubernetes.core.k8s_info:
     kubeconfig: ~{{ ansible_user }}/.kube/config
     kind: Pod 
     wait: yes 
     wait_sleep: 10
-    wait_timeout: 60
+    wait_timeout: 90
     label_selectors: 
-      - "app = cert-manager"
+      - "app=cert-manager"
 
 # Install Rancher Management Server 
 - name: add repo 
@@ -44,7 +47,7 @@
     chart_ref: rancher-stable/rancher
     values:
       replicas: 2
-      hostname: argocd.local
+      hostname: rancher.local
     release_namespace: cattle-system
     create_namespace: true
     kubeconfig_path: /home/i4/.kube/config
