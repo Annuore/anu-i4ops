@@ -24,5 +24,5 @@ This playbook removes kata container runtime daemonset and its classes from your
 - [Kata](https://katacontainers.io/docs/)
   - [Installation Guide](https://github.com/kata-containers/kata-containers/tree/main/docs/install)
   - [How to use Kata Containers and containerd with Kubernetes](https://github.com/kata-containers/kata-containers/blob/main/docs/how-to/how-to-use-k8s-with-containerd-and-kata.md)
-  - [Run Kata COntainers eith Kubernetes](https://github.com/kata-containers/kata-containers/blob/main/docs/how-to/run-kata-with-k8s.md)
+  - [Run Kata Containers with Kubernetes](https://github.com/kata-containers/kata-containers/blob/main/docs/how-to/run-kata-with-k8s.md)
   - [How to use Kata Containers and Containerd](https://github.com/kata-containers/kata-containers/blob/main/docs/how-to/containerd-kata.md)

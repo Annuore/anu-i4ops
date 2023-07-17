@@ -35,7 +35,15 @@
     name: kata-deploy
     wait: true 
     wait_sleep: 10
-    wait_timeout: 90
+    wait_timeout: 120
+
+- name: Copy kata runtime manifest to first master
+  template:
+    src: "runtime.yaml.j2"
+    dest: "{{ kata_dir }}/kata-runtime.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
 
 - name: get kata runtime  url 
   get_url:  
@@ -49,7 +57,7 @@
   kubernetes.core.k8s:
     kubeconfig: ~{{ ansible_user }}/.kube/config
     state: present 
-    src: ~{{ ansible_user }}/kata-runtimeClasses.yaml    
+    src: ~{{ ansible_user }}/kata-runtimeClasses.yaml     
 
 
     

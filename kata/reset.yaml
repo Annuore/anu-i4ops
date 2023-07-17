@@ -1,0 +1,8 @@
+---
+
+- hosts: master
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: reset
+      when: ansible_host == hostvars[groups['master'][0]]['ansible_host'] 
