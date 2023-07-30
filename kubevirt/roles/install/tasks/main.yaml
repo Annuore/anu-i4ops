@@ -1,0 +1,50 @@
+- name: install kubevirt operator and custom resource
+  become: false  
+  shell: | 
+    export KUBECONFIG=$HOME/.kube/config
+    export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)    
+    kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-operator.yaml 
+    kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-cr.yaml
+  when: ansible_host == hostvars[groups['master'][0]]['ansible_host']
+
+- name: Copy sample files for vms 
+  template:
+    src: "vm.yaml.j2"
+    dest: "~{{ ansible_user }}/vm.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
+- name: Copy sample files for vmi
+  template:
+    src: "vmi.yaml.j2"
+    dest: "~{{ ansible_user }}/vmi.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
+- name: install virtctl 
+  become: true 
+  shell: |
+    export KUBECONFIG=$HOME/.kube/config
+    VERSION=$(kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath="{.status.observedKubeVirtVersion}")
+    ARCH=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/') || windows-amd64.exe
+    echo ${ARCH}
+    curl -L -o virtctl https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/virtctl-${VERSION}-${ARCH}
+    chmod +x virtctl 
+    mv virtctl /usr/local/bin
+
+- name: install libguestfs library 
+  apt: 
+    update_cache: true 
+    package: libguestfs-tools
+    state: present 
+
+# FOR DAILY DEVELOPER BUILDS
+# - name: install kubevirt operator and custom resource
+#   become: false  
+#   shell: | 
+#     export KUBECONFIG=$HOME/.kube/config
+#     LATEST=$(curl -L https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest)    
+#     kubectl apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-operator.yaml
+#     kubectl apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-cr.yaml

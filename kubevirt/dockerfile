@@ -1,0 +1,6 @@
+FROM kubevirt/container-disk-v1alpha:v0.13.7
+ADD user-data i4kmod.ko /mnt/
+COPY jammy-server-cloudimg-arm64.img  /disk/ 
+COPY i4ctl /bin
+
+
