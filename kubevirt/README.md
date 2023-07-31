@@ -12,6 +12,35 @@ Included in this repo is the [kube-files](kube-files) directory that container e
 ### Quick Steps
 - Install kubevirt operator as described [here](https://kubevirt.io/user-guide/operations/installation/) or enable the kubevirt [addon](https://kubevirt.io/quickstart_minikube/) on [minikube](https://minikube.sigs.k8s.io/docs/start/). 
 
+#### Step by step instructions
+- Change the `ansible_user` and `ansible_host` to your user and ip. 
+- add ssh keys to remote systems using
+```ShellSession
+ssh-copy-id -i /path/to/public/key user@ip
+``` 
+- run `sudo mv virtctl /usr/local/bin` to add virtcl to the users's bin.
+- run the playbook using
+```ShellSession
+ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
+```  
+* **NOTE** make sure that hostkey-checking is disabled i  the default section of your /etc/ansible/ansible.cfg file.
+- create a testvm 
+```ShellSession
+kubectl apply -f vm.yaml
+``` 
+- start a virtual machine instance 
+```ShellSession
+virtctl start testvm
+``` 
+- get the vm and the vm instance. Optionally you can add a `-w` to watch the status or progress of the started vm
+```ShellSession
+kubectl get vm,vmi
+``` 
+- connect to the running vmi
+```ShellSession
+virtctl console testvm
+``` 
+
 ## Instructions <a id='instr'></a>
 **This playbook assumes that a kubernetes cluster is already installed.** 
 - Change the `ansible_user` and `ansible_host` to your user and ip. 
