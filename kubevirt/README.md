@@ -5,25 +5,34 @@
 - [**Resources**](#res)
 
 ## Overview 
-This playbook installs [kubevirt](https://kubevirt.io/user-guide/) into our k3s cluster. Kubevirt is a virtual machine management add-on for kubernetes. It allows temas with a reliance on existing vm-based workloads to rapidly containerize applications. It also installs virtctl and libguestfs-tools(for virt-builder and virt-customize).
+This playbook installs [kubevirt](https://kubevirt.io/user-guide/) into our k3s cluster. Kubevirt is a virtual machine management add-on for kubernetes. It allows teams with a reliance on existing vm-based workloads to rapidly containerize applications. It also installs virtctl and libguestfs-tools(for virt-builder and virt-customize).
 
-Included in this repo is the [kube-files](kube-files) directory that container examples of vm, vmi and container disk manifest files. The [dockerfile](dockerfile) builds a docker image that can be mounted on a vmi as a containerdisk image
+Included in this repo is the [kube-files](kube-files) directory that contains examples of vm, vmi and container disk manifest files. The [dockerfile](dockerfile) builds a docker image that can be mounted on a vmi as a containerdisk image
 
 ### Quick Steps
 - Install kubevirt operator as described [here](https://kubevirt.io/user-guide/operations/installation/) or enable the kubevirt [addon](https://kubevirt.io/quickstart_minikube/) on [minikube](https://minikube.sigs.k8s.io/docs/start/). 
 
-#### Step by step instructions
-- Change the `ansible_user` and `ansible_host` to your user and ip. 
+ #### Step by step instructions
+ **This playbook assumes that a kubernetes cluster is already installed. It also assumes that you have git installed.** 
+- clone the repo 
+```ShellSession
+git clone https://github.com/Annuore/anu-i4ops.git
+``` 
+- change directory into anu-i4ops
+```ShellSession
+cd anu-i4ops
+```
+- Change the `ansible_user` and `ansible_host` in the hosts.ini file to your user and ip. 
 - add ssh keys to remote systems using
 ```ShellSession
 ssh-copy-id -i /path/to/public/key user@ip
 ``` 
-- run `sudo mv virtctl /usr/local/bin` to add virtcl to the users's bin.
 - run the playbook using
 ```ShellSession
 ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
 ```  
-* **NOTE** make sure that hostkey-checking is disabled i  the default section of your /etc/ansible/ansible.cfg file.
+* **NOTE:** make sure that hostkey-checking is disabled in  the default section of your /etc/ansible/ansible.cfg file.
+- run `sudo mv virtctl /usr/local/bin` from the current user's home directory to add virtcl to the user's bin.
 - create a testvm 
 ```ShellSession
 kubectl apply -f vm.yaml
@@ -42,7 +51,6 @@ virtctl console testvm
 ``` 
 
 ## Instructions <a id='instr'></a>
-**This playbook assumes that a kubernetes cluster is already installed.** 
 - Change the `ansible_user` and `ansible_host` to your user and ip. 
 - add ssh keys to remote systems using
 ```ShellSession
