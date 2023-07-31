@@ -1,7 +1,7 @@
 # Kubevirt Ansible Playbook 
 
 ## On this Page 
-- [**Instructions**](#inst)
+- [**Instructions**](#instr)
 - [**Resources**](#res)
 
 ## Overview 
@@ -31,7 +31,7 @@ ssh-copy-id -i /path/to/public/key user@ip
 ```ShellSession
 ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
 ```  
-* **NOTE:** make sure that hostkey-checking is disabled in  the default section of your /etc/ansible/ansible.cfg file.
+**NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
 - run `sudo mv virtctl /usr/local/bin` from the current user's home directory to add virtcl to the user's bin.
 - create a testvm 
 ```ShellSession
@@ -50,7 +50,7 @@ kubectl get vm,vmi
 virtctl console testvm
 ``` 
 
-## Instructions <a id='instr'></a>
+## Instructions<a id='instr'></a>
 - Change the `ansible_user` and `ansible_host` to your user and ip. 
 - add ssh keys to remote systems using
 ```ShellSession
@@ -71,7 +71,7 @@ This is to avoid stuck terminating namespaces. If by mistake you deleted the ope
 kubectl -n kubevirt patch kv kubevirt --type=json -p '[{ "op": "remove", "path": "/metadata/finalizers" }]'
 ``` 
 
-## Resources <a id='res'></a>
+## Resources<a id='res'></a>
 - [Kubevirt Installation](https://kubevirt.io/user-guide/operations/installation/)
 - [Kubevirt Updating and deletion](https://kubevirt.io/user-guide/operations/updating_and_deletion/)
 - [Kubevirt VM creation](https://kubevirt.io/user-guide/virtual_machines/virtual_machine_instances/)
