@@ -18,14 +18,14 @@ This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vi
 - Then install longhorn for persistence
 
 ## Included Playbooks <a id='ip'></a>
-[`run.yaml`](run.yaml):
+[`install_k3s_cluster.yaml`](install_k3s_cluster.yaml):
 ```ShellSession
 ansible-playbook run.yaml -i hosts.ini
 ``` 
 Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `master` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. To add more nodes to the exsiting cluster, visit the k3s [HA embedded etcd](https://docs.k3s.io/datastore/ha-embedded) for details.
 
-[`reset.yaml`](reset.yaml):
+[`delete_k3s_cluster.yaml`](delete_k3s_cluster.yaml):
 ```ShellSession
 ansible-playbook reset.yaml -i hosts
 ```
