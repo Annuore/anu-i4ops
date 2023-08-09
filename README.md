@@ -2,24 +2,30 @@
 
 ## On this Page
 - [**Project Overview**](#project)
+- [**Project Workflow or Sequence**](#flow)
 - [**Included Playbooks**](#ip)
 - [**Roles**](#roles)
 - [**Instructions**](#instructions)
 - [**Resources**](#res)
 
+
 ## Project Overview <a id='project'></a>
 This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI). It also includes a [Kata](./kata/) playbook that deploys kata into the cluster.
 
+## Project Workflow or Sequence <a id='flow'></a>
+- First you install the k3s cluster (follow instructions below on how to install) or cd into k3s_quickstart to create a single-node k3s cluster.
+- Install kubevirt
+- Then install longhorn for persistence
 
 ## Included Playbooks <a id='ip'></a>
-[`run.yaml`](run.yaml):
+[`install_k3s_cluster.yaml`](install_k3s_cluster.yaml):
 ```ShellSession
 ansible-playbook run.yaml -i hosts.ini
 ``` 
 Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `master` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. To add more nodes to the exsiting cluster, visit the k3s [HA embedded etcd](https://docs.k3s.io/datastore/ha-embedded) for details.
 
-[`reset.yaml`](reset.yaml):
+[`delete_k3s_cluster.yaml`](delete_k3s_cluster.yaml):
 ```ShellSession
 ansible-playbook reset.yaml -i hosts
 ```
@@ -32,7 +38,7 @@ This role installs the K3s binary.
 This role installs all softwares and dependencies required for K3s to run.
 * [**K3s_cluster**](roles/k3s_cluster)
 This role deploys the K3s cluster. It starts the k3s service on the master node, generates a join token for the workers and then adds the workers to the cluster. It also generates the kube-vip RBAC manifest and adds the daemonset manifest to the auto-deploy directory.
-* [**Post-cluster-config**](roles/post-cluster-config)
+* [**Cluster_addons**](roles/cluster_addons)
 This role install argocd and rancher management server via helm. 
 * [**Reset**](roles/reset)
 This role deletes the cluster, directories, and stops K3s service on all nodes.

@@ -22,5 +22,5 @@
   gather_facts: yes
   become: yes
   roles:
-    - role: post-cluster-config
+    - role: cluster_addons
       when: ansible_host == hostvars[groups['workers'][0]]['ansible_host']
