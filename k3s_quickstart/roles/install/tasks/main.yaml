@@ -9,6 +9,9 @@
   shell: |
    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true" sh -s - 
 
+- name: include task to deploy kubevip 
+  include_tasks: kubevip.yaml
+
 - name: Enable and check K3s service
   systemd:
     name: k3s

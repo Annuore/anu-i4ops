@@ -35,6 +35,23 @@
     owner: "{{ ansible_user }}"
     mode: 0777
 
+- name: get sample pod file
+  get_url: 
+    url: https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/examples/pod_with_pvc.yaml
+    dest: ~{{ ansible_user }}/longhorn
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+- name: get sample storageclass file
+  get_url: 
+    url: https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/examples/storageclass.yaml
+    dest: ~{{ ansible_user }}/longhorn
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+  
 
 
 
