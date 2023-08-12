@@ -11,3 +11,5 @@
   with_items:
     - /usr/local/bin/helm
     - ~{{ ansible_user }}/.kube
+    - ~{{ ansible_user }}/vm.yaml
+    - ~{{ ansible_user }}/vmi.yaml

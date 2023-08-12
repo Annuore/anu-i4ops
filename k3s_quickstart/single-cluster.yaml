@@ -1,4 +1,4 @@
 - hosts: master
   become: yes
   roles:
-    - role: single_node_cluster
+    - role: install
