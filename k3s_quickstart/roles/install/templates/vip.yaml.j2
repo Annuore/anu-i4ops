@@ -34,6 +34,10 @@ spec:
           value: kube-system
         - name: svc_enable
           value: "true"
+        - name: enableServiceElection
+          value: "true"
+        - name: lb_enable
+          value: "true"
         - name: vip_address
           value: "192.168.1.200"
         image: ghcr.io/kube-vip/kube-vip:v0.6.0

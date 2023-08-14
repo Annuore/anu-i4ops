@@ -1,5 +1,9 @@
 # Longhorn Ansible Playbook 
-**IMPORTANT NOTE: add the label "volume: longhorn to any deployment that will consume the longhorn storage/volume** 
+
+**IMPORTANT NOTE: add the label "volume: longhorn to any kubernetes object(deloyment, pods, or statefulsets) that will consume the longhorn storage or volume** 
+
+**This playbook assumes that [kubevirt](../kubevirt) has been deployed into the cluster**
+
 ## Files and Directories
 - **roles:** contains two roles, install (which has the tasks that installs longhorn) and delete (deletes longhorn)
 - **hosts.ini:** host file to specify hosts ip and user
@@ -17,11 +21,24 @@ ssh-copy-id -i <path/to/public/key> hostname@remote-server-ip
 ```ShellSession
 ansible-playbook -i hosts.ini -k -K install-playbook.yaml
 ``` 
-- once the playbook runs, cd into the longhorn directory and create a storage class, persistent volume claim and pod to consume the volume
+- once the playbook runs, cd into the longhorn directory and create a storage class and persistent volume claim 
 ```ShellSession
 kubectl apply -f storageclass.yaml
-kubectl apply -f pod_with_pvc.yaml
+kubectl apply -f longhorn-vm-pvc.yaml
 ``` 
+- cd into user's home directory and create a vm.
+```ShellSession
+cd ~
+kubectl apply -f vm.yaml
+```  
+- start the vm.
+```ShellSession
+virtctl start testvm
+```
+- watch the status of the vm using `kubectl get vmi -w` and wait for the `running` status. connect to the vm using 
+```ShellSession
+virtctl console testvm
+```
 ## Resources
 - [Longhorn](https://longhorn.io/docs/1.5.1/what-is-longhorn/)
 - [Installation](https://longhorn.io/docs/1.5.1/deploy/install/)

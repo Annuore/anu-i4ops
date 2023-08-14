@@ -38,6 +38,5 @@
     state: absent 
   with_items: 
     - ~{{ ansible_user }}/longhorn
-    # - ~{{ ansible_user }}/vm.yaml
-    # - ~{{ ansible_user }}/vmi.yaml
+    
 
