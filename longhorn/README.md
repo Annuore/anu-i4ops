@@ -20,8 +20,20 @@ ansible-playbook -i hosts.ini -k -K install-playbook.yaml
 - once the playbook runs, cd into the longhorn directory and create a storage class, persistent volume claim and pod to consume the volume
 ```ShellSession
 kubectl apply -f storageclass.yaml
-kubectl apply -f pod_with_pvc.yaml
+kubectl apply -f longhorn/longhorn-vm-pvc.yaml
 ``` 
+- create a vm.
+```ShellSession
+kubectl apply -f vm.yaml
+```  
+- start the vm.
+```ShellSession
+virtctl start testvm
+```
+- watch the status of the vm using `kubectl get vmi -w` and wait for the `running` status. connect to the vm using 
+```ShellSession
+virtctl console testvm
+```
 ## Resources
 - [Longhorn](https://longhorn.io/docs/1.5.1/what-is-longhorn/)
 - [Installation](https://longhorn.io/docs/1.5.1/deploy/install/)

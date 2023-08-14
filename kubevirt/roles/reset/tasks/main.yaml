@@ -26,4 +26,5 @@
     - /usr/local/bin/virtctl
     - ~{{ ansible_user }}/vm.yaml
     - ~{{ ansible_user }}/vmi.yaml
+    - - ~{{ ansible_user }}/virtctl
 

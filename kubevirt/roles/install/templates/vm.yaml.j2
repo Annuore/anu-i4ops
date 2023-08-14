@@ -19,6 +19,9 @@ spec:
             - name: cloudinitdisk
               disk:
                 bus: virtio
+            - name: i4blockdisk
+              disk: 
+                bus: virtio
           interfaces:
           - name: default
             bridge: {}
@@ -32,6 +35,9 @@ spec:
         - name: containerdisk
           containerDisk:
             image: tedezed/ubuntu-container-disk:22.0
+        - name: i4blockdisk 
+          persistentVolumeClaim:
+            claimName: longhorn
         - name: cloudinitdisk
           cloudInitNoCloud:
             userData: |

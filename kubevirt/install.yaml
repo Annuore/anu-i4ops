@@ -1,7 +1,7 @@
 ---
-
-- hosts: all
+- hosts: master
   gather_facts: yes
   become: yes
   roles:
-    - role: reset
+    - role: install 
+      
