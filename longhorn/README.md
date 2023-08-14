@@ -2,7 +2,7 @@
 
 **IMPORTANT NOTE: add the label "volume: longhorn to any kubernetes object(deloyment, pods, or statefulsets) that will consume the longhorn storage or volume** 
 
-**This playbook assumes that [kubevirt](../kubevirt) has been deployed into the cluster
+**This playbook assumes that [kubevirt](../kubevirt) has been deployed into the cluster**
 
 ## Files and Directories
 - **roles:** contains two roles, install (which has the tasks that installs longhorn) and delete (deletes longhorn)
