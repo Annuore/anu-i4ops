@@ -37,7 +37,7 @@ spec:
             image: tedezed/ubuntu-container-disk:22.0
         - name: i4blockdisk 
           persistentVolumeClaim:
-            claimName: longhorn
+            claimName: longhorn-vm-pvc
         - name: cloudinitdisk
           cloudInitNoCloud:
             userData: |
