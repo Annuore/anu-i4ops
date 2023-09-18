@@ -7,7 +7,7 @@
 
 - name: install k3s single node cluster 
   shell: |
-   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true --disable=servicelb --disable-cloud-controller" sh -s - 
+   curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true --disable=servicelb --disable-cloud-controller" sh -s - 
 
 - name: include task to deploy kubevip 
   include_tasks: kubevip.yaml
@@ -18,14 +18,6 @@
     daemon_reload: yes
     state: restarted
     enabled: yes
-       
-- name: Copy config file to user home directory
-  copy:
-    src: /etc/rancher/k3s/k3s.yaml
-    dest: ~{{ ansible_user }}/.kube/config
-    remote_src: yes
-    owner: "{{ ansible_user }}"
-    mode: 0500
 
 - name: Replace https://localhost:6443 by https://master-ip:6443
   command: >-
@@ -33,6 +25,14 @@
       --server=https://{{ master_ip }}:6443
       --kubeconfig ~{{ ansible_user }}/.kube/config
   changed_when: true
+        
+- name: Copy config file to user home directory
+  copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ~{{ ansible_user }}/.kube/config
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    mode: 0500
 
 - name: Install helm
   unarchive:
@@ -43,4 +43,17 @@
     remote_src: true
   args:
     creates: /usr/local/bin/helm
+
+- name: Install nginx ingress controller 
+  command: helm install --kubeconfig ~{{ ansible_user }}/.kube/config my-release oci://ghcr.io/nginxinc/charts/nginx-ingress
+
+- name: install pre-requisites for kubernetes module
+  apt:
+    name: 
+    - python3-openshift
+    - python3-kubernetes
+    state: present
+    
+- name: include task to deploy rancher 
+  include_tasks: rancher_server.yaml
 

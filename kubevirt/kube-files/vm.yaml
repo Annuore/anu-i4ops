@@ -33,7 +33,7 @@ spec:
       volumes:
         - name: containervolume
           containerDisk:
-            image: tedezed/ubuntu-container-disk:22.0
+            image: annuore/i4kmod:ubuntu-0.0.3
         - name: cloudinitvolume
           cloudInitNoCloud:
             userData: |-

@@ -1,5 +1,12 @@
 # K3s Cluster Ansible Playbook
 
+## In this repo
+There are additional projects in this repo, they include:
+- [K3s single node cluster](#k3s_quickstart) which installs a single node cluster
+- [Kubevirt](#kubevirt) which deploys kubevirt into the cluster
+-[Longhorn](#longhorn) which deploys longhorn for storage and persistence
+
+
 ## On this Page
 - [**Project Overview**](#project)
 - [**Project Workflow or Sequence**](#flow)
