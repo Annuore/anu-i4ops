@@ -34,7 +34,7 @@ spec:
       volumes:
         - name: containerdisk
           containerDisk:
-            image: tedezed/ubuntu-container-disk:22.0
+            image: annuore/i4kmod:ubuntu-0.0.3
         - name: i4blockdisk 
           persistentVolumeClaim:
             claimName: longhorn-vm-pvc
