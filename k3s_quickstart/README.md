@@ -6,8 +6,8 @@ It'll also install kubevip for load balancing and virtual ip, rancher for cluste
 
 ## Basic Workflow
 - install the cluster
-- install [longhorn](#https://github.com/Annuore/anu-i4ops/tree/k3s/longhorn)
-- install [kubevirt](#https://github.com/Annuore/anu-i4ops/tree/k3s/kubevirt)
+- install [longhorn](https://github.com/Annuore/anu-i4ops/tree/k3s/longhorn)
+- install [kubevirt](https://github.com/Annuore/anu-i4ops/tree/k3s/kubevirt)
 
 
 ## Files and Directories
