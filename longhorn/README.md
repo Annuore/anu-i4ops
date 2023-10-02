@@ -23,7 +23,6 @@ ansible-playbook -i hosts.ini -k -K install-playbook.yaml
 ``` 
 - once the playbook runs, cd into the longhorn directory and create a storage class and persistent volume claim 
 ```ShellSession
-kubectl apply -f storageclass.yaml
 kubectl apply -f longhorn-vm-pvc.yaml
 ``` 
 - cd into user's home directory and create a vm.

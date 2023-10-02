@@ -52,7 +52,6 @@
   kubernetes.core.helm_repository: 
     repo_name: rancher-stable
     repo_url: https://releases.rancher.com/server-charts/stable
-    kubeconfig_path:  "/home/{{ ansible_user }}/.kube/config"
     repo_state: present
     
 - name: install rancher using helm 
