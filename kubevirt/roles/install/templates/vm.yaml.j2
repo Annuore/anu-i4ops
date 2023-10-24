@@ -34,7 +34,7 @@ spec:
       volumes:
         - name: containerdisk
           containerDisk:
-            image: annuore/i4kmod:ubuntu-0.0.3
+            image: annuore/i4kmod:ubuntu-0.0.1
         - name: i4blockdisk 
           persistentVolumeClaim:
             claimName: longhorn-vm-pvc
@@ -47,3 +47,5 @@ spec:
                   ubuntu:ubuntu
                   root:toor
                 expire: False
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvJdBBWFUH8/FMrlnr+/VPV+Zxy9E0BRs66Obeh8ArI4WblCdlAB7Gz4FV/snbF6xhhIKr7S/pqT14qQg4DtKTcpEJY6VnULOQsmkko+ZvT6hQcNv215FSoRB0fZvy1OudIGHLrBPsNgRR1ChZno+h789kwsnny25cm7DU8UdwamwnOUSHMb5kak6EzcXqrqDbs7Wbn0BLH3V2178i32B5OpHIddgTjjJ2eP1W+VnXPUDJJgDS/XOdZffxdXQptfu03B6cdsCTFNLYMJdW5zREhmaQMbeoIlCs+2tSG55psBq+R+Kh5JD+UKdjwbD4Np66Pw7BtCvLCOLB+fsg9oaXe4nNS0VHEz7HjNQSL+qMfwNnO564FimvGOpPp1oFr5UfV+pRaI6l8nWuZArHQBOT7MGRgEtAvrsRx+8oeNi2sEWQSV1ZOvC/Vt/4j/bMQklXGMiz+G59mRo6nZlgSXGBralsXJpKUdx5oJnNJ6hgnOERiPFqmAr9rCQ9REtfOBU= anu@u7

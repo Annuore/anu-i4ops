@@ -1,0 +1,10 @@
+---
+disk_image_dest: /mnt/c/Users/annuo/OneDrive/Desktop/k8s-lab/upwork/ansible/k3s/anu-i4ops/kubevirt/
+build_and_push_image_name: annuore/i4kmod
+build_and_push_image_build: true
+build_and_push_image_version: ubuntu-lunar-0.0.1.1
+build_docker_file_path: /mnt/c/Users/annuo/OneDrive/Desktop/k8s-lab/upwork/ansible/k3s/anu-i4ops/kubevirt
+build_and_push_pull: true
+build_and_push_push: true
+# build_and_push_tag_latest: true
+build_and_push_args: {}

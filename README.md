@@ -84,7 +84,6 @@ kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ``` 
 [Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI.  
-
 [Click here](https://docs.k3s.io/advanced) for k3s advanced configuration.
 
 ## Network Overview <a id='net'></a>
