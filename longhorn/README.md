@@ -48,8 +48,10 @@ virtctl console testvm
 * This will start up a prompt, type 'n' for new partition.
 ![Alt text](./images/image.png) 
 * Follow to prompt
+
 * Type 'p' for primary partition
 ![Alt text](./images/image0.png)
+
 * Click enter to select the default partition, default first sector and default last sector.
 ![Alt text](./images/image1.png)
 * Type 't' to change the partition type
