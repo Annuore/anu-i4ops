@@ -45,26 +45,26 @@ virtctl console testvm
 - List block storage `lsblk` (*on kubevirt, the storage maybe named vdc*)
 ![Alt text](./images/a.png)
 - partition disk `sudo fdisk /dev/vdc` 
-  -- This will start up a prompt, type 'n' for new partition.
+* This will start up a prompt, type 'n' for new partition.
 ![Alt text](./images/image.png) 
-  -- Follow to prompt
-  -- Type 'p' for primary partition
+* Follow to prompt
+* Type 'p' for primary partition
 ![Alt text](./images/image0.png)
-  -- Click enter to select the default partition, default first sector and default last sector.
+* Click enter to select the default partition, default first sector and default last sector.
 ![Alt text](./images/image1.png)
-  -- Type 't' to change the partition type
-  -- Type '8e' to select the linux lvm
-  -- Type 'w' to write and exit the prompt
+* Type 't' to change the partition type
+* Type '8e' to select the linux lvm
+* Type 'w' to write and exit the prompt
 ![Alt text](./images/image2.png)
-  -- view the newly created partition `lsblk`
+* View the newly created partition `lsblk`
 ![Alt text](./images/image3.png)
   
-- make filesystem with `sudo mkfs.ext4 /dev/vdc1`
-- make the i4 directory `sudo mkdir /i4`
-- mount the partitioned volume `sudo mount /dev/vdc1 i4`
-- touch .i4 file `sudo touch /i4/.i4` (*if you get an 'access/permission denied' output, check the file permissions on /i4 and make sure you have a write perssion. You can modify that using `sudo chmod +x /i4`*)
-- copy the i4ctl bin into user's local bin `sudo cp /home/i4/i4ctl /usr/local/bin`
-- run the i4ctl mount `i4ctl -m /i4/.i4`
+- Make filesystem with `sudo mkfs.ext4 /dev/vdc1`
+- Make the i4 directory `sudo mkdir /i4`
+- Mount the partitioned volume `sudo mount /dev/vdc1 i4`
+- Touch .i4 file `sudo touch /i4/.i4` (*if you get an 'access/permission denied' output, check the file permissions on /i4 and make sure you have a write perssion. You can modify that using `sudo chmod +x /i4`*)
+- Copy the i4ctl bin into user's local bin `sudo cp /home/i4/i4ctl /usr/local/bin`
+- Run the i4ctl mount `i4ctl -m /i4/.i4`
 
 ## Resources
 - [Longhorn](https://longhorn.io/docs/1.5.1/what-is-longhorn/)
