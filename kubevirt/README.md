@@ -10,6 +10,8 @@ This playbook installs [kubevirt](https://kubevirt.io/user-guide/) into our k3s 
 
 Included in this repo is the [kube-files](kube-files) directory that contains examples of vm, vmi and container disk manifest files. The [dockerfile](dockerfile) builds a docker image that can be mounted on a vmi as a containerdisk image
 
+**NOTE: Run commands on the remote host(on which the cluster is to be deployed) as a regular user not as sudo**
+
 ### Quick Steps
 - Install kubevirt operator as described [here](https://kubevirt.io/user-guide/operations/installation/) or enable the kubevirt [addon](https://kubevirt.io/quickstart_minikube/) on [minikube](https://minikube.sigs.k8s.io/docs/start/). 
 
@@ -34,6 +36,11 @@ ansible-playbook -i hosts.ini -k -K run-playbook.yaml
 ```  
 **NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
 - run `sudo mv virtctl /usr/local/bin` from the current user's home directory to add virtcl to the user's bin.
+- create a pvc
+```ShellSession
+cd ~/longhorn
+kubectl apply -f longhorn-vm-pvc.yaml
+``` 
 - create a testvm 
 ```ShellSession
 kubectl apply -f vm.yaml
@@ -81,13 +88,14 @@ kubectl -n kubevirt patch kv kubevirt --type=json -p '[{ "op": "remove", "path":
 
 #### Before running the playbook
 - in [main.yaml](./build_kubevirt_image/roles/create-vm/defaults/main.yaml) file, change the *build_and_push_image_name* to your docker hub repository name in the format *username/repo*, the *build_and_push_image_version*, and *build_docker_file_path* to the absolute path to the dockerfile.
-- Note that the *disk_image_dest* pathneeds to end with a trailing slash '/' to avoid errors. Also, the *build_docker_file_path* and *disk_image_dest* paths MUST be the same.
+- Note that the *disk_image_dest* path needs to end with a trailing slash '/' to avoid errors. Also, the *build_docker_file_path* and *disk_image_dest* paths MUST be the same.
 - change ssh key (public key of your remote host, i.e. either master or worker nodes) in [vm.yaml](./roles/install/templates/vm.yaml.j2) or comment out that line if you do not want to add ssh keys.
 
 #### Steps
 - cd into [build_kubevirt_image](./build_kubevirt_image/) directory.
 - run the playbook `ansible-playbook -i hosts.ini -k -K run-kubevirt-vm.yaml`
-**NOTES:**
+
+**NOTE**
 - if you get an ouput similar to `"changed": false, "skip_reason": "Conditional result was False"`, change the *build_and_push_image_version*, the playbook will not build an image version if it's previously built, else, remove the image from your computer.
 - The playbook takes between 12 to 16 minutes to run, if any of the tasks is taking time, it's running. The long build time is due to the image file size.
 
