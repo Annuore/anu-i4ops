@@ -10,6 +10,8 @@ This playbook installs [kubevirt](https://kubevirt.io/user-guide/) into our k3s 
 
 Included in this repo is the [kube-files](kube-files) directory that contains examples of vm, vmi and container disk manifest files. The [dockerfile](dockerfile) builds a docker image that can be mounted on a vmi as a containerdisk image
 
+**NOTE: Run commands on the remote host(on which the cluster is to be deployed) as a regular user not as sudo**
+
 ### Quick Steps
 - Install kubevirt operator as described [here](https://kubevirt.io/user-guide/operations/installation/) or enable the kubevirt [addon](https://kubevirt.io/quickstart_minikube/) on [minikube](https://minikube.sigs.k8s.io/docs/start/). 
 
@@ -34,6 +36,11 @@ ansible-playbook -i hosts.ini -k -K run-playbook.yaml
 ```  
 **NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
 - run `sudo mv virtctl /usr/local/bin` from the current user's home directory to add virtcl to the user's bin.
+- create a pvc
+```ShellSession
+cd ~/longhorn
+kubectl apply -f longhorn-vm-pvc.yaml
+``` 
 - create a testvm 
 ```ShellSession
 kubectl apply -f vm.yaml
