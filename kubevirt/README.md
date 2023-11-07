@@ -107,3 +107,4 @@ kubectl -n kubevirt patch kv kubevirt --type=json -p '[{ "op": "remove", "path":
 - [Virtctl]( https://github.com/kubevirt/kubevirt.github.io/blob/main/_includes/quickstarts/virtctl.md)
 - [Kubevirt Image Generator](https://github.com/Tedezed/kubevirt-images-generator)
 - [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/)
+>>>>>>> d936eab40d6254d6287b9b97e7bd11af40b1dced
