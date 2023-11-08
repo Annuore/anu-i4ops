@@ -72,4 +72,5 @@ virtctl console testvm
 ## Resources
 - [Longhorn](https://longhorn.io/docs/1.5.1/what-is-longhorn/)
 - [Installation](https://longhorn.io/docs/1.5.1/deploy/install/)
+>>>>>>> d936eab40d6254d6287b9b97e7bd11af40b1dced
 - [Use Longhorn](https://longhorn.io/docs/1.5.1/volumes-and-nodes/create-volumes/)
