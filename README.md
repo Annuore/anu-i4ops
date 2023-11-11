@@ -26,7 +26,7 @@ This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vi
 - Install kubevirt
 - Then install longhorn for persistence
 
-## Included Playbooks <a id='ip'></a>
+## Setup hosts.ini and servers <a id='ip'></a>
 [`setup hosts.ini. you need server/hostname/host IP /user (i4demo)/pass(i4demo) `](hosts.ini):
 ```ShellSession
 [master]
