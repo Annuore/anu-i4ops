@@ -11,10 +11,10 @@ ansible-playbook run-k3s_quick.yaml -i hosts.ini -k -K
 \\\
 ansible-playbook stop-k3s_quick.yaml -i hosts.ini -k -K
 
-  
-- install [longhorn](https://github.com/Annuore/anu-i4ops/tree/k3s/longhorn)
+install kubevirt first, longhorn second
 - install [kubevirt](https://github.com/Annuore/anu-i4ops/tree/k3s/kubevirt)
-
+- 
+- install [longhorn](https://github.com/Annuore/anu-i4ops/tree/k3s/longhorn)
 
 ## Files and Directories
 - **roles:** contains two roles, install (which has the tasks that installs k3s) and delete (deletes the cluster)
