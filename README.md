@@ -21,21 +21,45 @@ There are additional projects in this repo, they include:
 This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI). It also includes a [Kubevirt](./kubevirt) playbook that deploys kubevirt into the cluster. For each additional projects like the [singlenode k3s cluster](https://github.com/Annuore/anu-i4ops/blob/k3s/k3s_quickstart/README.md), [kubevirt](https://github.com/Annuore/anu-i4ops/blob/k3s/kubevirt/README.md), and [longhorn](https://github.com/Annuore/anu-i4ops/blob/k3s/longhorn/README.md), there's an available readme which will walk you through each project.
 
 ## Project Workflow or Sequence <a id='flow'></a>
+- setup hosts.ini
 - First you install the k3s cluster (follow instructions below on how to install) or cd into k3s_quickstart to create a single-node k3s cluster.
 - Install [kubevirt](https://github.com/Annuore/anu-i4ops/blob/k3s/kubevirt/README.md)
 - Then install [longhorn](https://github.com/Annuore/anu-i4ops/blob/k3s/longhorn/README.md) for persistence
 
+## Setup hosts.ini and servers <a id='ip'></a>
+[`setup hosts.ini. you need server/hostname/host IP /user (i4demo)/pass(i4demo) `](hosts.ini):
+```ShellSession
+[master]
+u5 ansible_host=10.243.81.56 ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+; u6 ansible_host=10.243.170.237 ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+; u7 ansible_host=10.243.26.226 ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+[workers]
+u8 ansible_host=10.243.113.123 ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+u9 ansible_host=10.243.201.10 ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+[all:children]
+master
+
+; Optional, if you want your vars in the host file
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+; k3s_version=v1.22.3+k3s1
+; systemd_dir= /etc/systemd/system
+; master_ip="{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+; extra_server_args=""
+; extra_agent_args="
+```
+
 ## Included Playbooks <a id='ip'></a>
 [`install_k3s_cluster.yaml`](install_k3s_cluster.yaml):
 ```ShellSession
-ansible-playbook run.yaml -i hosts.ini
+ansible-playbook install_k3s_cluster.yaml -i hosts.ini -k -K
 ``` 
-Optionally, you can add `-K` to ask for priviledge esclation password, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
+Optionally, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
 Your inventory must include at least one `master` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. To add more nodes to the exsiting cluster, visit the k3s [HA embedded etcd](https://docs.k3s.io/datastore/ha-embedded) for details.
 
 [`delete_k3s_cluster.yaml`](delete_k3s_cluster.yaml):
 ```ShellSession
-ansible-playbook reset.yaml -i hosts
+ansible-playbook delete_k3s_cluster.yaml -i hosts -k -K
 ```
 This playbook deletes k3s all its files, directories and services from all hosts.
 
