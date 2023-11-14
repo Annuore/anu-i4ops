@@ -10,7 +10,7 @@ This playbook installs [kubevirt](https://kubevirt.io/user-guide/) into our k3s 
 
 Included in this repo is the [kube-files](kube-files) directory that contains examples of vm, vmi and container disk manifest files. The [dockerfile](dockerfile) builds a docker image that can be mounted on a vmi as a containerdisk image
 
-**NOTE: Run commands on the remote host(on which the cluster is to be deployed) as a regular user not as sudo**
+**NOTE: Run commands on the remote host(on which the cluster is to be deployed) as a regular user not as root**
 
 ### Quick Steps
 - Install kubevirt operator as described [here](https://kubevirt.io/user-guide/operations/installation/) or enable the kubevirt [addon](https://kubevirt.io/quickstart_minikube/) on [minikube](https://minikube.sigs.k8s.io/docs/start/). 
@@ -35,7 +35,8 @@ ssh-copy-id -i /path/to/public/key user@ip
 ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
 ```  
 **NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
-- run `sudo mv virtctl /usr/local/bin` from the current user's home directory to add virtcl to the user's bin.
+
+## To use the newly deployed longhorn on the remote host, 
 - create a pvc
 ```ShellSession
 cd ~/longhorn
@@ -64,8 +65,8 @@ virtctl console testvm
 ```ShellSession
 ssh-copy-id -i /path/to/public/key user@ip
 ``` 
-- Run the run-playbook.yaml to install kubevirt perator in your cluster 
-- Run a `kubectl apply` on vm.yaml in the [kube-files](kube-files) directory. 
+- Run the run-playbook.yaml to install kubevirt operator in your cluster 
+- Run a `kubectl apply` on vm.yaml in the user's home directory. 
 - Start a vm instance from the created vm using `virtcl start <name-of-vm>` 
 - To get access into the virtual machine run, `virtctl console <name-of-vm>`
 
@@ -107,4 +108,4 @@ kubectl -n kubevirt patch kv kubevirt --type=json -p '[{ "op": "remove", "path":
 - [Virtctl]( https://github.com/kubevirt/kubevirt.github.io/blob/main/_includes/quickstarts/virtctl.md)
 - [Kubevirt Image Generator](https://github.com/Tedezed/kubevirt-images-generator)
 - [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/)
->>>>>>> d936eab40d6254d6287b9b97e7bd11af40b1dced
+

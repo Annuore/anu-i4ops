@@ -15,16 +15,8 @@
     group: "{{ ansible_user }}"
     mode: 0755
 
-- name: Copy sample files for vmi
-  template:
-    src: "vmi.yaml.j2"
-    dest: "~{{ ansible_user }}/vmi.yaml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: 0755
-
 - name: install virtctl 
-  become: true 
+  # become: false 
   shell: |
     export KUBECONFIG=~{{ ansible_user }}/.kube/config
     VERSION=$(kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath="{.status.observedKubeVirtVersion}")
@@ -41,6 +33,36 @@
     package: libguestfs-tools
     state: present 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # FOR DAILY DEVELOPER BUILDS
 # - name: install kubevirt operator and custom resource
 #   become: false  
@@ -49,3 +71,11 @@
 #     LATEST=$(curl -L https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest)    
 #     kubectl apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-operator.yaml
 #     kubectl apply -f https://storage.googleapis.com/kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${LATEST}/kubevirt-cr.yaml
+
+# - name: Copy sample files for vmi
+#   template:
+#     src: "vmi.yaml.j2"
+#     dest: "~{{ ansible_user }}/vmi.yaml"
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
+#     mode: 0755

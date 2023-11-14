@@ -1,13 +1,4 @@
 --- 
-# Install cert-manager
-# - name: get cert-manager url 
-#   get_url:  
-#     url: https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-#     dest: ~{{ ansible_user }}
-#     owner: "{{ ansible_user }}"
-#     group: "{{ ansible_user }}"
-#     mode: 0777
-
 - name: create cert-manager namespace 
   kubernetes.core.k8s:
     kubeconfig: ~{{ ansible_user }}/.kube/config
@@ -16,12 +7,6 @@
     kind: Namespace 
     name: cert-manager 
 
-# - name: install cert-manager
-#   kubernetes.core.k8s:
-#     kubeconfig: ~{{ ansible_user }}/.kube/config
-#     state: present 
-#     src: ~{{ ansible_user }}/cert-manager.yaml
-#     namespace: cert-manager
 - name: add jetsatck cert-manager repo to helm 
   command: helm repo add --kubeconfig ~{{ ansible_user }}/.kube/config jetstack https://charts.jetstack.io
 
@@ -60,7 +45,7 @@
     chart_ref: rancher-stable/rancher
     values:
       replicas: 2
-      # hostname: 192.168.1.204.sslip.io
+      hostname: 192.168.1.204.sslip.io
       ingress: 
         enabled: false 
     release_namespace: cattle-system

@@ -7,7 +7,7 @@
 
 - name: install k3s single node cluster 
   shell: |
-   curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true --disable=servicelb --disable-cloud-controller" sh -s - 
+   curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true --disable=servicelb --disable=traefik --disable-cloud-controller" sh -s - 
 
 - name: include task to deploy kubevip 
   include_tasks: kubevip.yaml
@@ -32,7 +32,16 @@
     dest: ~{{ ansible_user }}/.kube/config
     remote_src: yes
     owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0500
+
+- name: Copy sample deployment file to user's home
+  template:
+    src: "deploy.yaml.j2"
+    dest: "~{{ ansible_user }}/deploy.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
 
 - name: Install helm
   unarchive:

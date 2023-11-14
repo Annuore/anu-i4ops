@@ -23,8 +23,8 @@ This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vi
 ## Project Workflow or Sequence <a id='flow'></a>
 - setup hosts.ini
 - First you install the k3s cluster (follow instructions below on how to install) or cd into k3s_quickstart to create a single-node k3s cluster.
-- Install kubevirt
-- Then install longhorn for persistence
+- Install [kubevirt](https://github.com/Annuore/anu-i4ops/blob/k3s/kubevirt/README.md)
+- Then install [longhorn](https://github.com/Annuore/anu-i4ops/blob/k3s/longhorn/README.md) for persistence
 
 ## Setup hosts.ini and servers <a id='ip'></a>
 [`setup hosts.ini. you need server/hostname/host IP /user (i4demo)/pass(i4demo) `](hosts.ini):
@@ -64,15 +64,15 @@ ansible-playbook delete_k3s_cluster.yaml -i hosts -k -K
 This playbook deletes k3s all its files, directories and services from all hosts.
 
 ## Roles <a id='roles'></a>
-* [**K3s-download**](roles/k3s_download)
+* [**k3s-download**](roles/k3s_download)
 This role installs the K3s binary. 
-* [**K3s-prereq**](roles/k3s_prereq)
+* [**k3s-prereq**](roles/k3s_prereq)
 This role installs all softwares and dependencies required for K3s to run.
-* [**K3s_cluster**](roles/k3s_cluster)
+* [**k3s_cluster**](roles/k3s_cluster)
 This role deploys the K3s cluster. It starts the k3s service on the master node, generates a join token for the workers and then adds the workers to the cluster. It also generates the kube-vip RBAC manifest and adds the daemonset manifest to the auto-deploy directory.
-* [**Cluster_addons**](roles/cluster_addons)
+* [**cluster_addons**](roles/cluster_addons)
 This role install argocd and rancher management server via helm. 
-* [**Reset**](roles/reset)
+* [**reset**](roles/reset)
 This role deletes the cluster, directories, and stops K3s service on all nodes.
 
 ## Instructions <a id='instructions'></a>

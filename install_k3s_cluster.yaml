@@ -18,7 +18,7 @@
   roles:
     - role: k3s_cluster/workers
 
-- hosts: u8
+- hosts: workers
   gather_facts: yes
   become: yes
   roles:

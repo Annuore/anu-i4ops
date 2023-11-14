@@ -1,17 +1,19 @@
 --- 
-
 - name: add repo 
+  become: false
   kubernetes.core.helm_repository: 
     repo_name: argo
     repo_url: https://argoproj.github.io/argo-helm
-    kubeconfig_path:  /home/i4/.kube/config
+    kubeconfig_path: /home/{{ ansible_user }}/.kube/config
     repo_state: present
     
 - name: install argocd using helm 
+  become: false
   kubernetes.core.helm: 
     name: argocd 
     chart_ref: argo/argo-cd
     chart_version: 5.31.0
+    force: true
     values:
       server:
         replicas: 2
@@ -23,9 +25,9 @@
           enabled: true
           annotations: 
             kubernetes.io/ingress.allow-http: "true"
-          ingressClassName: traefik
+          ingressClassName: nginx
           hosts:
             - argo.local      
     release_namespace: argocd
     create_namespace: true
-    kubeconfig_path: /home/i4/.kube/config
+    kubeconfig_path: /home/{{ ansible_user }}/.kube/config
