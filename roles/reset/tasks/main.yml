@@ -23,6 +23,9 @@
     - /var/lib/kubelet
     - /run/netns
     - /var/lib/rancher/k3s
+    - /var/lib/kubelet/pods
+    - /var/lib/kubelet/plugins
+    - /run/netns/cni-
   loop_control:
     loop_var: mounted_fs
 
@@ -38,10 +41,22 @@
     - /var/lib/kubelet
     - /var/lib/rancher/k3s
     - /usr/local/bin/helm
+    - /usr/local/bin/kubectl
+    - /usr/local/bin/crictl
+    - /usr/local/bin/ctr
     - ~{{ ansible_user }}/cert-manager.yaml
     - ~{{ ansible_user }}/install.yaml
     - ~{{ ansible_user }}/.kube
+    - /var/lib/rancher/
+    - /var/lib/cni/
+    - /run/k3s
+    - /run/flannel
+    - /etc/rancher
 
+- name: Remove tmp directory used for manifests
+  file:
+    path: /tmp/k3s
+    state: absent
 
 - name: daemon_reload
   systemd:

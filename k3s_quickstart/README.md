@@ -5,7 +5,7 @@ This playbook installs k3s on a single-node. A single-node server installation i
 It'll also install kubevip for load balancing and virtual ip, rancher for cluster management, and nginx ingress controller.
 
 ## Basic Workflow
-- install the cluster
+- install the [cluster](https://github.com/Annuore/anu-i4ops/tree/k3s/k3s_quickstart#instructions)
 - install [longhorn](https://github.com/Annuore/anu-i4ops/tree/k3s/longhorn)
 - install [kubevirt](https://github.com/Annuore/anu-i4ops/tree/k3s/kubevirt)
 
@@ -15,6 +15,12 @@ It'll also install kubevip for load balancing and virtual ip, rancher for cluste
 - **hosts.ini:** host file to specify hosts ip and user
 - **single-cluster.yaml:** playbook to install k3s
 - **delete-sn-cluster.yaml:** deletes k3s 
+
+## Instructions
+- clone the [repo](https://github.com/Annuore/anu-i4ops/tree/k3s) and cd into it.
+- cd into k3s_quickstart
+- edit hosts.ini file to fit your master's ip address and username
+- run the playbook `ansible-playbook run-k3s_quick.yaml -i hosts.ini -k -K`
 
 ## Sample deployment
 On the user's home directory, find a [deploy.yaml](#roles/install/templates/deploy.yaml.j2) file

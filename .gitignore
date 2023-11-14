@@ -5,3 +5,4 @@ kubevirt/jammy-server-cloudimg-arm64.img
 kubevirt/user-data
 kubevirt/test.yaml
 kubevirt/kubevirt-images-generator
+artifacts

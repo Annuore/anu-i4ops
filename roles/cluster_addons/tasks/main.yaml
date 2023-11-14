@@ -14,6 +14,9 @@
     - python3-kubernetes
     state: present
 
+- name: Install nginx ingress controller 
+  command: helm install --kubeconfig ~{{ ansible_user }}/.kube/config my-release oci://ghcr.io/nginxinc/charts/nginx-ingress
+  
 - name: Install argocd 
   include_tasks: argocd.yaml
 

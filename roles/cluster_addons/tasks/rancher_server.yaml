@@ -35,13 +35,15 @@
 
 # Install Rancher Management Server 
 - name: add repo 
+  become: false
   kubernetes.core.helm_repository: 
     repo_name: rancher-stable
     repo_url: https://releases.rancher.com/server-charts/stable
-    kubeconfig_path:  /home/i4/.kube/config
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
     repo_state: present
     
 - name: install rancher using helm 
+  become: false
   kubernetes.core.helm: 
     name: rancher 
     chart_ref: rancher-stable/rancher
@@ -50,4 +52,4 @@
       hostname: rancher.local
     release_namespace: cattle-system
     create_namespace: true
-    kubeconfig_path: /home/i4/.kube/config
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
