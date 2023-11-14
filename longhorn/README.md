@@ -19,7 +19,7 @@ ssh-copy-id -i <path/to/public/key> hostname@remote-server-ip
 
 - run the playbook using 
 ```ShellSession
-ansible-playbook -i hosts.ini -k -K install-playbook.yaml
+ansible-playbook -i hosts.ini -k -K run-longhorn.yaml
 ``` 
 - once the playbook runs, cd into the longhorn directory and create a storage class and persistent volume claim 
 ```ShellSession
