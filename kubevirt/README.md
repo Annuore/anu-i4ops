@@ -40,11 +40,14 @@ ansible-playbook -i hosts.ini -k -K run-kubevirt.yaml
 - create a pvc
 ```ShellSession
 cd ~/longhorn
-kubectl apply -f longhorn-vm-pvc.yaml
+check hosts.ini
+u5 ansible_host=10.243.16.10  ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+
+ansible-playbook -i hosts.ini run-longhorn.yaml -k -K
 ``` 
 - create a testvm 
 ```ShellSession
-kubectl apply -f vm.yaml
+kubectl apply -f ~/vm.yaml
 ``` 
 - start a virtual machine instance 
 ```ShellSession
