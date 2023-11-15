@@ -32,7 +32,7 @@ ssh-copy-id -i /path/to/public/key user@ip
 ``` 
 - run the playbook using
 ```ShellSession
-ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
+ansible-playbook -i hosts.ini -k -K run-kubevirt.yaml 
 ```  
 **NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
 
