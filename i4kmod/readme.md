@@ -12,4 +12,6 @@ $ echo asdfasdfadsfadsfasd > /i4/test.txt
 $ ls /i4  
 $ cp /i4/test.txt /tmp  
 
-
+** delivery **
+locate all bare metal server files  ---
+/usr/sbin/i4
