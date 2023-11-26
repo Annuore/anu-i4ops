@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -23,7 +22,7 @@ spec:
         - name: vip_arp
           value: "true"
         - name: vip_interface
-          value: "ztukuwpbzi"
+          value: "eno1"
         - name: port
           value: "6443"
         - name: vip_cidr
@@ -39,7 +38,7 @@ spec:
         - name: lb_enable
           value: "true"
         - name: vip_address
-          value: "10.243.1.200"
+          value: "192.168.1.200"
         image: ghcr.io/kube-vip/kube-vip:v0.6.0
         imagePullPolicy: IfNotPresent
         name: kube-vip
