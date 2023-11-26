@@ -32,7 +32,7 @@ ssh-copy-id -i /path/to/public/key user@ip
 ``` 
 - run the playbook using
 ```ShellSession
-ansible-playbook -i hosts.ini -k -K run-playbook.yaml 
+ansible-playbook -i hosts.ini -k -K run-kubevirt.yaml 
 ```  
 **NOTE:** make sure that hostkey-checking is disabled in the default section of your /etc/ansible/ansible.cfg file.
 
@@ -40,11 +40,14 @@ ansible-playbook -i hosts.ini -k -K run-playbook.yaml
 - create a pvc
 ```ShellSession
 cd ~/longhorn
-kubectl apply -f longhorn-vm-pvc.yaml
+check hosts.ini
+u5 ansible_host=10.243.16.10  ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3
+
+ansible-playbook -i hosts.ini run-longhorn.yaml -k -K
 ``` 
 - create a testvm 
 ```ShellSession
-kubectl apply -f vm.yaml
+kubectl apply -f ~/vm.yaml
 ``` 
 - start a virtual machine instance 
 ```ShellSession

@@ -23,12 +23,13 @@ ansible-playbook run-k3s_quick.yaml -i hosts.ini -k -K
 - clone the [repo](https://github.com/Annuore/anu-i4ops/tree/k3s) and cd into it.
 - cd into k3s_quickstart
 - edit hosts.ini file to fit your master's ip address and username
+- `u5 ansible_host=10.243.16.10  ansible_user=i4demo ansible_python_interpreter=/usr/bin/python3`
 - run the playbook `ansible-playbook run-k3s_quick.yaml -i hosts.ini -k -K`
 
 ## Sample deployment
 On the user's home directory, find a [deploy.yaml](#roles/install/templates/deploy.yaml.j2) file
 - Change the image reference under spec.template.spec.containers to your image. 
-- Run `kubectl apply -f deploy.yaml`. This will create two replicas of nginx deployment and a service.
+- Run `kubectl apply -f ~/deploy.yaml`. This will create two replicas of nginx deployment and a service.
 
 - kubectl get deployments
-- kubectl delete -f deployment.yaml
+- kubectl delete -f deploy.yaml
