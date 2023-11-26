@@ -47,7 +47,7 @@
       replicas: 2
       hostname: 192.168.1.204.sslip.io
       ingress: 
-        enabled: false 
+        enabled: true 
     release_namespace: cattle-system
     create_namespace: true
     kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"

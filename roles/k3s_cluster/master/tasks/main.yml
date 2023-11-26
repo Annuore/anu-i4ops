@@ -2,12 +2,12 @@
 
 - name: Clean previous runs of k3s-init
   systemd:
-    name: k3s-init
+    name: k3s.service
     state: stopped
   failed_when: false
 
 - name: Clean previous runs of k3s-init
-  command: systemctl reset-failed k3s-init
+  command: systemctl reset-failed k3s.service
   failed_when: false
   changed_when: false
   args:

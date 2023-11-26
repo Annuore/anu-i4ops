@@ -3,7 +3,6 @@
     k3s-killall.sh
     k3s-uninstall.sh
 
-
 - name: Remove service files, binaries and data
   file:
     name: "{{ item }}"

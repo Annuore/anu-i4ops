@@ -32,4 +32,3 @@ On the user's home directory, find a [deploy.yaml](#roles/install/templates/depl
 
 - kubectl get deployments
 - kubectl delete -f deployment.yaml
-- 

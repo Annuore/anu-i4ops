@@ -7,7 +7,7 @@
 
 - name: install k3s single node cluster 
   shell: |
-   curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --kube-apiserver-arg=allow-privileged=true --disable=servicelb --disable=traefik --disable-cloud-controller" sh -s - 
+    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --disable=traefik --disable=servicelb --tls-san=$(hostname -I | awk '{print $1}') --flannel-external-ip $(hostname -I | awk '{print $1}') --node-external-ip --kube-apiserver-arg=allow-privileged=true  --disable-cloud-controller" sh -s 
 
 - name: include task to deploy kubevip 
   include_tasks: kubevip.yaml
@@ -24,7 +24,7 @@
     k3s kubectl config set-cluster default
       --server=https://{{ master_ip }}:6443
       --kubeconfig ~{{ ansible_user }}/.kube/config
-  changed_when: true
+  # changed_when: true
         
 - name: Copy config file to user home directory
   copy:
