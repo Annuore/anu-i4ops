@@ -1,0 +1,43 @@
+- name: delete kata RBAC
+  kubernetes.core.k8s:
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    state: absent
+    src: "{{ kata_dir }}/tools/packaging/kata-deploy/kata-rbac/base/kata-rbac.yaml"
+
+- name: apply kata-cleanup kustomize directory
+  become: false
+  shell: |
+    export KUBECONFIG=$HOME/.kube/config
+    kubectl delete -f https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/kata-deploy/base/kata-deploy.yaml
+    kubectl apply -k {{ kata_dir }}/tools/packaging/kata-deploy/kata-cleanup/overlays/k3s & pid=$! & sleep 10
+    wait $pid
+    kubectl delete -k kata-containers/tools/packaging/kata-deploy/kata-cleanup/overlays/k3s/
+
+- name: remove runtime classes
+  kubernetes.core.k8s:
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    state: absent
+    src: /home/{{ ansible_user }}/kata-runtimeClasses.yaml
+
+- name: Remove service files, binaries and data
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+  - kata-runtimeClasses.yaml
+  - kata-containers
+
+- name: wait for kata pods to get terminated 
+  kubernetes.core.k8s_info:
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    api_version: apps/v1
+    kind: DaemonSet
+    namespace: kube-system
+    name: kata-deploy
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 90
+
+
+
+

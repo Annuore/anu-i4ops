@@ -1,0 +1,111 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: testvm
+spec:
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: testvm
+        i4-vm-tag: golden-vm
+    spec:
+      domain:
+        devices:
+          disks:
+          - name: datavolumedisk
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+          - name: i4blockdisk
+            disk:
+              bus: virtio
+          interfaces:
+          - name: default
+            masquerade: {} 
+        resources:
+          requests:
+            memory: 1024M
+      networks:
+      - name: default     # pod network
+        pod: {}
+      accessCredentials:
+      - sshPublicKey:
+          source:
+            secret:
+             secretName: my-pub-key
+          propagationMethod:
+            qemuGuestAgent:
+              users:
+              - anu
+              - ubuntu
+      volumes:
+      - name: datavolumedisk
+        dataVolume:
+          name: i4-dv
+      - name: i4blockdisk
+        persistentVolumeClaim:
+          claimName: longhorn-vm-pvc
+      - name: cloudinitdisk
+        cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              package_update: true
+              packages:
+                - micro
+                - qemu-guest-agent
+              runcmd:
+                - - systemctl
+                  - enable
+                  - --now
+                  - qemu-guest-agent.service
+                - - systemctl
+                  - enable
+                  - --now
+                  - sshd.service
+                - |
+                  cat > /etc/systemd/network/enp1s0.network <<EOF
+                  [Match]
+                  Name=enp1s0
+
+                  [Network]
+                  DHCP=yes
+                  EOF
+                - [systemctl, restart, systemd-networkd]
+              users:
+                - default
+                - name: anu
+                  lock_passwd: false
+                  passwd: $6$R3yfO7eE9aX$dVWp7DEhDJdGLe2EOomEVzW2qnd86zlBbaZOZC7esOV1DShycSWYc17HQDhsUqJfX4hcPVqX5dDcOM2pILqY50
+                  sudo: ALL=(ALL) NOPASSWD:ALL
+                  shell: /bin/bash
+              chpasswd:
+                list: |
+                  root:root
+                  ubuntu:ubuntu
+                expire: false
+            networkData: |
+              network:
+                version: 1
+                config:
+                - type: physical
+                name: enp1s0
+                subnets:
+                 - type: dhcp
+  dataVolumeTemplates:
+  - metadata:
+      name: i4-dv
+    spec:
+      storage:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 4Gi
+        storageClassName: longhorn
+      source:
+        registry:
+          url: "docker://annuore/i4kmod:ubuntu-lunar-0.0.1.4"

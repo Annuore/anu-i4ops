@@ -1,0 +1,64 @@
+--- 
+- name: make kata directory 
+  file: 
+    path: "{{ kata_dir }}"
+    state: directory 
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+    
+- name: Clone a github repository
+  git:
+    repo: https://github.com/kata-containers/kata-containers.git
+    dest: "{{ kata_dir }}"
+    clone: yes
+    update: yes
+
+- name: apply kata RBAC 
+  kubernetes.core.k8s: 
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    state: present 
+    src: "{{ kata_dir }}/tools/packaging/kata-deploy/kata-rbac/base/kata-rbac.yaml"
+
+- name: apply kata kustomize directory
+  become: false  
+  shell: | 
+    export KUBECONFIG=$HOME/.kube/config
+    kubectl apply -k {{ kata_dir }}/tools/packaging/kata-deploy/kata-deploy/overlays/k3s
+  
+- name: wait for kata pods 
+  kubernetes.core.k8s_info:
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    api_version: apps/v1
+    kind: DaemonSet 
+    namespace: kube-system 
+    name: kata-deploy
+    wait: true 
+    wait_sleep: 10
+    wait_timeout: 120
+
+- name: Copy kata runtime manifest to first master
+  template:
+    src: "runtime.yaml.j2"
+    dest: "{{ kata_dir }}/kata-runtime.yaml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
+- name: get kata runtime  url 
+  get_url:  
+    url: https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
+    dest: /home/{{ ansible_user }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+- name: apply runtime classes
+  kubernetes.core.k8s:
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
+    state: present 
+    src: /home/{{ ansible_user }}/kata-runtimeClasses.yaml     
+
+
+    
+    

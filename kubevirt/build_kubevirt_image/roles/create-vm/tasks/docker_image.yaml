@@ -1,0 +1,43 @@
+- name: install python dependencies
+  become: true
+  apt:
+    update_cache: yes
+    state: present
+    name: 
+    - python3-pip
+    - python3-docker
+
+- name: Check if Image exists {{build_and_push_image_name}}
+  run_once: true
+  become: false
+  shell: |
+    docker image history "{{ build_and_push_image_name }}":"{{ build_and_push_image_version }}" | wc -l
+  delegate_to: localhost
+  register: image_exists
+  changed_when: false
+
+- name: Build the Image {{build_and_push_image_name}}
+  run_once: true
+  become: false
+  docker_image:
+    name: "{{ build_and_push_image_name }}"
+    tag: "{{ build_and_push_image_version }}"
+    build:
+      path: "{{ build_docker_file_path }}"
+      args: "{{ build_and_push_args }}"
+      pull: "{{ build_and_push_pull }}"
+      nocache: true
+    source: build
+  delegate_to: localhost
+  when:
+  - image_exists.stdout == "0" and build_and_push_image_build == true
+
+- name: Push version {{build_and_push_image_name}}
+  become: false
+  command: docker push {{ build_and_push_image_name }}:{{ build_and_push_image_version }}
+  delegate_to: localhost 
+  when: 
+  - image_exists.stdout == "0" and build_and_push_push == true
+
+
+

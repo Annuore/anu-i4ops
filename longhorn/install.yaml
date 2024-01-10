@@ -1,0 +1,14 @@
+---
+- hosts: workers
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: install-workers
+      tags: workers
+- hosts: master
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: install
+      when: ansible_host == hostvars[groups['master'][0]]['ansible_host']
+      tags: master

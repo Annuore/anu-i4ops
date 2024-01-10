@@ -1,0 +1,27 @@
+---
+
+- hosts: all 
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: k3s_prereq
+    - role: k3s_download
+    
+
+- hosts: master
+  become: yes
+  roles:
+    - role: k3s_cluster/master
+
+- hosts: workers
+  become: yes
+  roles:
+    - role: k3s_cluster/workers
+
+- hosts: master
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: cluster_addons
+      tags: [cluster_addons]
+      when: ansible_host == hostvars[groups['master'][0]]['ansible_host']

@@ -1,0 +1,158 @@
+
+- name: install longhorn requirements
+  apt: 
+    update_cache: true 
+    name: 
+    - open-iscsi
+    - nfs-common
+    - cryptsetup
+    state: present 
+  tags: host
+
+- name: Load the dm_crypt module
+  community.general.modprobe:
+    name: dm_crypt
+    state: present
+  tags: host
+
+# install longhorn
+- name: add repo 
+  kubernetes.core.helm_repository: 
+    repo_name: longhorn
+    repo_url: https://charts.longhorn.io
+    repo_state: present
+  when: ansible_host == hostvars[groups['master'][0]]['ansible_host'] 
+  tags: 
+    - k8s
+
+- name: install longhorn using helm 
+  kubernetes.core.helm: 
+    name: longhorn 
+    chart_ref: longhorn/longhorn
+    chart_version: 1.5.1      
+    release_namespace: longhorn-system
+    create_namespace: true
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
+    force: true
+    values:
+      global:
+        longhornUI:
+          # since we do not have ingress and access it directly through the k8s service
+          replicas: 1
+  when: ansible_host == hostvars[groups['master'][0]]['ansible_host'] 
+  # failed_when: false
+  tags: 
+    - k8s
+
+- name: make longhorn directory 
+  file: 
+    name: /home/{{ ansible_user }}/longhorn
+    state: directory
+    owner: "{{ ansible_user }}"
+    mode: 0777
+  tags: 
+    - k8s
+
+- name: make dir for crd 
+  file: 
+    name: /home/{{ ansible_user }}/longhorn/crd/ 
+    state: directory 
+    owner: "{{ ansible_user }}"
+    mode: 0777
+
+- name: get snapshot controller crd 
+  get_url: 
+    url: "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v6.2.1/client/config/crd/{{ item }}"
+    dest: "/home/{{ ansible_user }}/longhorn/crd/"
+  with_items: 
+  - kustomization.yaml
+  - snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+  - snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+  - snapshot.storage.k8s.io_volumesnapshots.yaml
+  tags: 
+  - k8s-longhorn
+
+- name: install snapshot controller crd 
+  shell: kubectl apply --kubeconfig /home/{{ ansible_user }}/.kube/config -k /home/{{ ansible_user }}/longhorn/crd
+  tags: 
+  - k8s-longhorn
+
+- name: make dir for snapshot controller 
+  file: 
+    name: /home/{{ ansible_user }}/longhorn/snapshot-controller
+    state: directory 
+    owner: "{{ ansible_user }}"
+    mode: 0777
+
+- name: get snapshot controller 
+  get_url:
+    url: "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/v6.2.1/deploy/kubernetes/snapshot-controller/{{ item }}"
+    dest: "/home/{{ ansible_user }}/longhorn/snapshot-controller/"
+  with_items: 
+  - kustomization.yaml
+  - rbac-snapshot-controller.yaml
+  - setup-snapshot-controller.yaml
+  tags: 
+  - k8s-longhorn
+
+- name: install snapshot controller 
+  shell: |
+    kubectl apply --kubeconfig /home/{{ ansible_user }}/.kube/config -k /home/{{ ansible_user }}/longhorn/snapshot-controller
+  tags: 
+  - k8s-longhorn
+
+- name: Template k8s manifests
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: /home/{{ ansible_user }}/longhorn/{{ item | basename | regex_replace('\.j2$', '') }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0644
+  with_fileglob:
+    - ../templates/*.j2
+  tags: 
+    - k8s
+    - template
+- name: Apply k8s manifests
+  become: false
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user}}//.kube/config
+    kubectl apply -f /home/{{ ansible_user }}/longhorn/storageclass-encrypted-volumes-global.yaml
+    kubectl apply -f /home/{{ ansible_user }}/longhorn/storageclass.yaml
+    kubectl apply -f /home/{{ ansible_user }}/longhorn/longhorn-vm-pvc.yaml
+    kubectl apply -f /home/{{ ansible_user }}/longhorn/pvc-encrypted.yaml
+  tags:
+    - k8s
+    - apply
+- name: validate pvc state
+  become: false  
+  shell: | 
+    export KUBECONFIG=/home/{{ ansible_user}}//.kube/config
+    kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/longhorn-vm-pvc-encrypted --timeout=120s
+  tags:
+    - k8s 
+    - validation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

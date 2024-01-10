@@ -1,0 +1,48 @@
+sudo apt install mate-desktop-environment-extras -y
+sudo apt install libappindicator1 -y
+wget https://github.com/kasmtech/KasmVNC/releases/download/v1.2.0/kasmvncserver_jammy_1.2.0_amd64.deb
+sudo apt install ./kasmvncserver_jammy_1.2.0_amd64.deb
+vncserver --help
+
+sudo addgroup ssl-cert
+sudo usermod -aG ssl-cert $USER
+
+$ vncserver 
+
+- vncserver prompt
+1 to create a user
+Press Enter for default username
+Enter password and verify 
+3 to manually edit xstartup
+
+
+nano ~/.vnc/xstartup
+- paste this 
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+xrdb $HOME/.Xresources
+xsetroot -solid grey
+gnome-session --session=ubuntu &
+startxfce4 &
+su - anu -c "vncserver :1 -geometry 1920x1080"
+- save and exit
+chmod +x ~/.vnc/xstartup
+
+cd ~
+chown $USER:$USER .Xauthority
+
+---kasmvnc and zerotier ---
+sudo nano /etc/kasmvnc/kasmvnc.yaml
+- uncomment line below
+network:
+  interface: 0.0.0.0
+- save and exit 
+
+install zerotier 
+curl -s https://install.zerotier.com | sudo bash
+sudo zerotier-cli join a09acf0233a8851b
+sudo zerotier-cli list-network
+
+- login to vncserver
+su - anu -c "vncserver :1"

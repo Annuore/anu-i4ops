@@ -1,0 +1,11 @@
+kubevirt/i4kmod.ko
+kubevirt/i4ctl
+kubevirt/focal-server-cloudimg-amd64.img
+kubevirt/jammy-server-cloudimg-arm64.img
+kubevirt/user-data
+kubevirt/test.yaml
+kubevirt/kubevirt-images-generator
+artifacts
+kube-config
+.history/
+logs

@@ -1,0 +1,38 @@
+- name: create i4 dir 
+  file: 
+    path: /home/{{ ansible_user}}/i4
+    state: directory 
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+- name: copy i4kmod n i4ctl into i4 dir 
+  copy:
+    src: "{{ i4_src_dir}}"
+    dest: /home/{{ ansible_user }}/i4
+    # remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}" 
+
+- name: get ubuntu cloud image file
+  get_url:
+    url: https://cloud-images.ubuntu.com/lunar/current/lunar-server-cloudimg-amd64.img
+    dest: /home/{{ ansible_user}}
+  changed_when: false
+
+# - name: add vm.yaml template  
+- name: run virt-customize command
+  become: true
+  command: virt-copy-in -a lunar-server-cloudimg-amd64.img i4 /home
+
+- name: copy image to local  
+  become: false
+  fetch:
+    src: /home/{{ ansible_user }}/lunar-server-cloudimg-amd64.img
+    dest: "{{ disk_image_dest }}" 
+    flat: true
+
+- name: include docker image build task 
+  include_tasks: docker_image.yaml
+
+

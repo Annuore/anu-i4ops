@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "redhat.ansible",
+    "redhat.vscode-yaml",
+    "codezombiech.gitignore",
+    "donjayamanne.githistory",
+    "esbenp.prettier-vscode",
+    "foxundermoon.shell-format",
+    "timonwong.shellcheck",
+    "xyz.local-history"
+  ]
+}

@@ -1,0 +1,14 @@
+---
+
+- hosts: master
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Check if the longhorn namespace exists
+      shell: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config get namespace longhorn-system --ignore-not-found
+      register: longhorn_check
+      ignore_errors: true
+    - name: include the delete role when the longhorn namespace exists
+      include_role:
+        name: delete
+      when: longhorn_check.stdout != ''

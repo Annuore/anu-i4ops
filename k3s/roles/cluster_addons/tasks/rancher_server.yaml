@@ -1,0 +1,53 @@
+---
+- name: Install Helm Diff
+  kubernetes.core.helm_plugin:
+    plugin_path: "https://github.com/databus23/helm-diff"
+    state: present
+  tags: helm-diff
+  
+- name: add repo 
+  become: false
+  kubernetes.core.helm_repository: 
+    repo_name: jetstack
+    repo_url: https://charts.jetstack.io
+    repo_state: present
+  tags: cert
+
+- name: install cert-manager using helm 
+  become: false
+  kubernetes.core.helm: 
+    name: cert-manager 
+    chart_ref: jetstack/cert-manager
+    chart_version: v1.11.0
+    values:
+      installCRDs: true
+    release_namespace: cert-manager
+    create_namespace: true
+    wait: true
+    timeout: 120s
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
+  tags: cert
+
+# Install Rancher Management Server 
+- name: add repo 
+  kubernetes.core.helm_repository: 
+    repo_name: rancher-stable
+    repo_url: https://releases.rancher.com/server-charts/stable
+    repo_state: present
+  tags: rancher
+    
+- name: install rancher using helm 
+  kubernetes.core.helm: 
+    name: rancher 
+    chart_ref: rancher-stable/rancher
+    values:
+      replicas: 2
+      hostname: 192.168.1.204.sslip.io
+      ingress: 
+        enabled: true 
+    release_namespace: cattle-system
+    create_namespace: true
+    wait: true
+    timeout: 120s
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
+  tags: rancher

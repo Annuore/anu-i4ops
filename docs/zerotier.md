@@ -8,8 +8,8 @@ Wilde6666!
 
 .................
 
-Briefing (21 min) https://www.youtube.com/watch?v=QrHHuFw-AHI 
-Demo1 (6 min) https://youtu.be/MPvPiDJSvIo 
+Briefing (21 min) https://www.youtube.com/watch?v=QrHHuFw-AHI
+Demo1 (6 min) https://youtu.be/MPvPiDJSvIo
 business brief (3 min) https://youtu.be/bsn_7L-9Nps
 https://youtu.be/RhH8ASixAqE -- Wikipedia List Data Breach (2min)
 
@@ -20,15 +20,11 @@ service --status-all   >>> should show zerotier-one
 zerotier-cli info
 zerotier-cli join 1c33c1ced0e8aa78
 
-this will join you to a zerotier (port forwarded) network
-
-10.243.16.10    u5
-10.243.170.237  u6
-10.243.26.226   u7
-10.243.113.123  u8
-10.243.201.10   u9
-10.243.74.30    l2
-10.243.101.89   pc
+this will join you to a zerotier network
+you should be able to ping/login in
+server u7   172.26.20.66
+server u8   172.26.24.155
+server u9   172.26.241.201
 
 all have login -- anu     pass -- anupass   sudo group
 

@@ -1,0 +1,15 @@
+- name: uninstall single node cluster 
+  shell: 
+    k3s-killall.sh
+    k3s-uninstall.sh
+
+- name: Remove service files, binaries and data
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - /usr/local/bin/helm
+    - /home/{{ ansible_user }}/.kube
+    - /home/{{ ansible_user }}/vm.yaml
+    - /home/{{ ansible_user }}/vmi.yaml
+    - /var/lib/rancher/k3s

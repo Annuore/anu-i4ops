@@ -1,0 +1,6 @@
+set -e
+ssh -fNL 6443:127.0.0.1:6443 {{ansible_user}}@{{ansible_host}} -o ExitOnForwardFailure=yes
+echo "The SSH port forwarding session has been established :)."
+echo "In order to access the k8s cluster set the KUBECONFIG env."
+echo "export KUBECONFIG={{ artifacts_dir }}/latest/.kube/config"
+echo "Keep this terminal opened in order to preserve the SSH session."

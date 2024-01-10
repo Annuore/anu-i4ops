@@ -1,0 +1,72 @@
+- name: install kubevirt operator and custom resource
+  become: false
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user}}//.kube/config
+    export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)
+    kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-operator.yaml --server-side
+    kubectl wait --for condition="established" crd kubevirt.kubevirt.io/kubevirt
+    kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-cr.yaml
+  when: ansible_host == hostvars[groups['master'][0]]['ansible_host']
+  tags:
+    - kubevirt
+
+- name: wait for kubevirt operator
+  become: false
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user}}//.kube/config
+    # Sleep to mitigate kubectl issue: https://github.com/kubernetes/kubectl/issues/1236
+    kubectl wait --for=jsonpath='{.status.phase}'=Deployed kubevirt.kubevirt.io/kubevirt -n kubevirt --timeout=120s
+  register: wait_result
+  retries: 5
+  delay: 10
+  until: wait_result is not failed
+  when: ansible_host == hostvars[groups['master'][0]]['ansible_host']
+
+- name: make kubevirt directory
+  file:
+    name: /home/{{ ansible_user }}/kubevirt
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0777
+
+- name: Template kubevirt manifests
+  ansible.builtin.template:
+    dest: /home/{{ ansible_user }}/kubevirt/{{ item | basename | regex_replace('\.j2$', '') }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+    src: "{{ item }}"
+  with_fileglob:
+    - ../templates/*.j2
+  tags:
+    - kubevirt
+
+- name: install virtctl
+  # become: false
+  shell: |
+    export KUBECONFIG=~{{ ansible_user }}/.kube/config
+    export VERSION=$(kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath="{.status.observedKubeVirtVersion}")
+    export ARCH=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/') || windows-amd64.exe
+    wget https://github.com/kubevirt/kubevirt/releases/download/$VERSION/virtctl-$VERSION-$ARCH
+    mv virtctl-${VERSION}-${ARCH} virtctl
+    chmod +x virtctl
+    cp virtctl /usr/local/bin/virtctl
+
+- name: install libguestfs library
+  apt:
+    update_cache: true
+    package: libguestfs-tools
+    state: present
+
+- name: install CDI
+  shell: |
+    export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
+    export VERSION=$(basename $(curl -s -w %{redirect_url} https://github.com/kubevirt/containerized-data-importer/releases/latest))
+    kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/$VERSION/cdi-operator.yaml --server-side
+    kubectl apply -f https://github.com/kubevirt/containerized-data-importer/releases/download/$VERSION/cdi-cr.yaml --server-side
+
+- name: create k8s secret from public key
+  shell: kubectl create --kubeconfig /home/{{ ansible_user }}/.kube/config secret generic my-pub-key --from-file=key1=.ssh/id_rsa.pub
+  failed_when: false
+  tags: secret

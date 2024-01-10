@@ -1,0 +1,16 @@
+
+- name: install longhorn requirements
+  apt: 
+    update_cache: true 
+    name: 
+    - open-iscsi
+    - nfs-common
+    - cryptsetup
+    state: present 
+  tags: host
+
+- name: Load the dm_crypt module
+  community.general.modprobe:
+    name: dm_crypt
+    state: present
+  tags: host

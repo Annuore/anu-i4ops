@@ -1,0 +1,49 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: i4-vm
+spec:
+  template:
+    metadata:
+      labels:
+        kubevirt.io/size: small
+        kubevirt.io/domain: i4-vm
+    spec:
+      domain:
+        cpu: 
+          cores: 2
+        devices:
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          interfaces:
+          - name: default
+            masquerade: {}
+            ports: 
+             - port: 80
+             - port: 22
+        resources:
+          requests:
+            memory: 1024M
+      networks:
+      - name: default
+        pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: annuore/i4kmod:ubuntu-0.0.1
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              ssh_authorized_keys: 
+                -  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8OgNGEiJz1p6MnFcQMkaFtFfWwiUCrG6NgdbKU21i+SrBPZRUke5N6d+6ndtmFmUqQvFHrGGYErdcemgyIZqtEPo4u8HTQeZPApgauxNEVlr9IcBQlLjTFOIMfZAFULxVNobkkA/8SoH1cPY2u+HldpoAy7lwAFHcQR9R80dlwv5vmBw0ToWcQr7Mizd5s0fcWWbutBZbUDUE6inDtI4atmyN0MVEGCCB2TANNsakK6hK/yUneSSSbGWNhrBO+DSu1kmOTAWB6TJcGOnUK1A3XUmrywqRJy2dh0wbknFjfhU4KVDvX/fQQ6afRj4suU8LDPfFS0D5n5Iy1Rcl6bWVwauhCPF/2BLW4EjHmaxNZInxuOYNMgvn2M+dheSbCUFhdoqV40Q5qByQ06H2yMEOJCowxDRDlKd73KHyYN2j8pjnbbCpNDxd5XxAYa0hwESd+lltoKYrUVxfFPq6+J1Q9wo/bXc6nYsmThHb6IpnVz8TKPgWSkln0nh2BYKrR8oyF9FmWMStW6uubHMuciXL2VE3Mle5KrIHJCjQOVMw4JS2c/RLym7zx8+zOWEZwXLLdu4Xf+FGoBUcZWlPdax5KIDj9fSZnSZX0CUr96Xyvzn717ajaoZpbAsBY4fmwJEO54MNWcImt2xtjfm8vLCRf9RPqN2OzWraGPLhRUzliQ==         
+              chpasswd:
+                list: |
+                  ubuntu:ubuntu
+                  root:toor
+                expire: False

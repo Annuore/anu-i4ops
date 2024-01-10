@@ -1,0 +1,7 @@
+i4kmod.ko
+i4ctl
+focal-server-cloudimg-amd64.img
+jammy-server-cloudimg-arm64.img
+user-data
+test.yaml
+kubevirt-images-generator
