@@ -1,6 +1,7 @@
 k3s_version: v1.25.10+k3s1
 kubevip-dir: /var/lib/rancher/k3s/server/manifests/
 kube_vip_tag_version: "v0.6.0"
+kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
 # apiserver_endpoint is virtual ip-address which will be configured on each master
 # apiserver_endpoint: "192.168.30.201"
 ansible_user: i4

@@ -1,8 +1,25 @@
 ---
-- hosts: master
-  gather_facts: yes
-  become: yes
+- name: Install Kubevirt
+  hosts: master
+  gather_facts: true
+  become: true
   roles:
-    - role: install 
-      
-      
+    - role: install
+  tags: install-kubevirt
+
+- name: Create Virtual Machines
+  hosts: master
+  gather_facts: true
+  become: false
+  roles:
+    - role: create-vms
+  tags: create-vms
+
+- name: Configure Virtual Machines
+  hosts: vms
+  # We do not gather_facts because we do not know yet if a vm is ready
+  gather_facts: false
+  become: false
+  roles:
+    - role: configure-vms
+  tags: configure-vms

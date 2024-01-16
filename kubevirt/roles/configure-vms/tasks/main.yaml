@@ -1,0 +1,81 @@
+- name: Wait for system to become reachable (timeout after 300 seconds)
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+- name: Copy i4kmod directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/roles/configure-vms/i4kmod"
+    local_follow: true
+    dest: "/home/{{ ansible_user }}/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+    backup: true
+- name: Install a list of packages
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - apt-utils
+      - apt-transport-https
+      - openssh-server
+      - micro
+      - sudo
+      - wget
+      - gpg
+      - curl
+      - gnupg
+      - gedit
+      - iproute2
+      - netstat-nat
+      - net-tools
+      - htop
+      - neofetch
+      - nvtop
+      - radeontop
+      - iputils-tracepath
+      - iputils-ping
+      - bridge-utils
+      - mesa-utils
+      - konsole
+      - sshpass
+      - software-properties-common
+      - git
+
+- name: Install python
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - python3-pip
+      - python3-full
+      - python3-pip
+      - python3-full
+      - python3-pip
+      - python3-tk
+      - python3-pandas
+      - python3-numpy
+
+# - name: Install notebook
+#   become: true
+#   ansible.builtin.apt:
+#     update_cache: true
+#     pkg:
+#       - notebook
+
+- name: Install zerotier
+  become: true
+  ansible.builtin.shell: |
+    curl -s https://install.zerotier.com | sudo bash
+    service zerotier-one start
+
+# - name: Misc
+#   become: true
+#   ansible.builtin.shell: |
+#     rm /usr/lib/python3.11/EXTERNALLY-MANAGED
+
+# - name: Install vscode
+#   ansible.builtin.shell: |
+#     wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+#     add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+#     apt install code
+

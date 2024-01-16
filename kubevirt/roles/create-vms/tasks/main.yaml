@@ -1,0 +1,119 @@
+- name: Create VM secret with public keys
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: vm-id-pub
+        namespace: default
+      data:
+        key1: "{{ lookup('ansible.builtin.file', '.ssh/id_rsa.pub') | b64encode }}"
+  register: config_secret
+
+- name: Create PVC
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: vm30000-i4
+        namespace: default
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-crypto-global
+        resources:
+          requests:
+            storage: 16Gi
+
+- name: Create VM instance
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    definition:
+      apiVersion: kubevirt.io/v1
+      kind: VirtualMachine
+      metadata:
+        name: vm30000
+        namespace: default
+      spec:
+        running: true
+        template:
+          spec:
+            domain:
+              devices:
+                disks:
+                  - name: os
+                    disk:
+                      bus: virtio
+                  - name: cloudinitdisk
+                    disk:
+                      bus: virtio
+                  - name: i4
+                    disk:
+                      bus: virtio
+                rng: {}
+              resources:
+                requests:
+                  memory: 1024M
+            terminationGracePeriodSeconds: 0
+            accessCredentials:
+              - sshPublicKey:
+                  source:
+                    secret:
+                      secretName: vm-id-pub
+                  propagationMethod:
+                    configDrive: {}
+            volumes:
+              - name: os
+                dataVolume:
+                  name: vm30000-os
+              - name: i4
+                persistentVolumeClaim:
+                  claimName: vm30000-i4
+              - cloudInitConfigDrive:
+                  userData: |-
+                    #cloud-config
+                    password: ubuntu
+                    chpasswd: { expire: False }
+                name: cloudinitdisk
+        dataVolumeTemplates:
+          - metadata:
+              name: vm30000-os
+            spec:
+              pvc:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 20Gi
+                storageClassName: longhorn
+              source:
+                registry:
+                  url: "docker://quay.io/containerdisks/ubuntu:22.04"
+
+  register: config_vm
+- name: Create NodePort service
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: vm30000
+        namespace: default
+      spec:
+        type: NodePort
+        selector:
+          vm.kubevirt.io/name: vm30000
+        ports:
+          - port: 22
+            targetPort: 22
+            nodePort: 30000
+  register: config_svc
