@@ -48,6 +48,6 @@
     release_namespace: cattle-system
     create_namespace: true
     wait: true
-    timeout: 120s
+    timeout: 200s
     kubeconfig_path: "{{ kubeconfig_path }}"
   tags: rancher

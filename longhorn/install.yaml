@@ -1,14 +1,27 @@
 ---
+- hosts: master
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Check if the longhorn namespace exists
+      shell: kubectl --kubeconfig "{{ kubeconfig }}" get namespace longhorn-system --ignore-not-found
+      register: longhorn_check
+      ignore_errors: true
 - hosts: workers
   gather_facts: yes
   become: yes
   roles:
     - role: install-workers
       tags: workers
+      when: longhorn_check.stdout == ''
 - hosts: master
   gather_facts: yes
   become: yes
   roles:
     - role: install
-      when: ansible_host == hostvars[groups['master'][0]]['ansible_host']
-      tags: master
+      when: 
+      - ansible_host == hostvars[groups['master'][0]]['ansible_host']  
+      - longhorn_check.stdout == ''
+      tags: 
+      - master
+

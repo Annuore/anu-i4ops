@@ -1,10 +1,20 @@
 ---
+- hosts: master
+  gather_facts: true
+  become: yes
+  tasks:
+    - name: Check if the kubevirt namespace exists
+      shell: kubectl --kubeconfig "{{ kubeconfig }}" get namespace kubevirt --ignore-not-found
+      register: kubevirt_check
+      ignore_errors: true 
+    
 - name: Install Kubevirt
   hosts: master
   gather_facts: true
   become: true
   roles:
     - role: install
+      when: kubevirt_check.stdout == ''
   tags: install-kubevirt
 
 - name: Create Virtual Machines

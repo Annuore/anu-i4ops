@@ -1,17 +1,17 @@
-- name: Create VM secret with public keys
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig_path }}"
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      type: Opaque
-      metadata:
-        name: vm-id-pub
-        namespace: default
-      data:
-        key1: "{{ lookup('ansible.builtin.file', '.ssh/id_rsa.pub') | b64encode }}"
-  register: config_secret
+# - name: Create VM secret with public keys
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     state: present
+#     definition:
+#       apiVersion: v1
+#       kind: Secret
+#       type: Opaque
+#       metadata:
+#         name: vm-id-pub
+#         namespace: default
+#       data:
+#         key1: "{{ lookup('ansible.builtin.file', '/home/{{ ansible_user}}/.ssh/id_rsa.pub') | b64encode }}"
+#   register: config_secret
 
 - name: Create PVC
   kubernetes.core.k8s:
