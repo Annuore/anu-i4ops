@@ -1,0 +1,4 @@
+- hosts: master
+  become: yes
+  roles:
+    - role: install

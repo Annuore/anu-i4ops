@@ -30,6 +30,3 @@ ansible-playbook install.yaml -i hosts.ini -k -K
 On the user's home directory, find a [deploy.yaml](#roles/install/templates/deploy.yaml.j2) file
 - Change the image reference under spec.template.spec.containers to your image. 
 - Run `kubectl apply -f ~/deploy.yaml`. This will create two replicas of nginx deployment and a service.
-
-- kubectl get deployments
-- kubectl delete -f deploy.yaml
