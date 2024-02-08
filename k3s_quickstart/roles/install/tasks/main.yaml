@@ -1,48 +1,93 @@
 - name: Create directory .kube
   file:
-    path: ~{{ ansible_user }}/.kube
+    path: /home/{{ ansible_user }}/.kube
     state: directory
     owner: "{{ ansible_user }}"
     mode: 0750
-
-- name: install k3s single node cluster 
+- name: Populate service facts
+  ansible.builtin.service_facts:
+  tags: test
+- name: install k3s single node cluster
   shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --disable=traefik --disable=servicelb --tls-san=$(hostname -I | awk '{print $1}') --flannel-external-ip $(hostname -I | awk '{print $1}') --node-external-ip --kube-apiserver-arg=allow-privileged=true  --disable-cloud-controller" sh -s 
+    curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={v1.25.7+k3s1} INSTALL_K3S_EXEC="server --disable=traefik --disable=servicelb --tls-san=$(hostname -I | awk '{print $1}') --flannel-external-ip $(hostname -I | awk '{print $1}') --node-external-ip --kube-apiserver-arg=allow-privileged=true  --disable-cloud-controller" sh -s
+  when:
+    - (ansible_facts.services['k3s.service'] is undefined) or ((ansible_facts.services['k3s.service'] is defined) and (ansible_facts.services['k3s.service'].state != 'running'))
+  tags: test
 
-- name: include task to deploy kubevip 
+- name: include task to deploy kubevip
   include_tasks: kubevip.yaml
 
 - name: Enable and check K3s service
   systemd:
     name: k3s
     daemon_reload: yes
-    state: restarted
+    state: started
     enabled: yes
 
 - name: Replace https://localhost:6443 by https://master-ip:6443
   command: >-
     k3s kubectl config set-cluster default
       --server=https://{{ master_ip }}:6443
-      --kubeconfig ~{{ ansible_user }}/.kube/config
-  # changed_when: true
-        
+      --kubeconfig "{{ kubeconfig_path }}"
+  tags:
+    - artifacts
+- name: Fetch kubeconfig
+  fetch:
+    src: "{{ kubeconfig_path }}"
+    dest: "{{ artifacts_dir }}/k0s-kubeconfig.yaml"
+    flat: yes
+    validate_checksum: no
+  tags:
+    - artifacts
 - name: Copy config file to user home directory
   copy:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: ~{{ ansible_user }}/.kube/config
+    dest: "{{ kubeconfig_path }}"
     remote_src: yes
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0500
-
+- name: Fetch kubeconfig
+  fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "{{ artifacts_dir }}/latest/.kube/config"
+    flat: yes
+  tags:
+    - artifacts
+- name: Template ssh script
+  template:
+    src: "ssh-tunnel.sh.j2"
+    dest: "ssh-tunnel.sh"
+    mode: 0744
+  tags:
+    - artifacts
+- name: Fetch ssh script
+  fetch:
+    src: "ssh-tunnel.sh"
+    dest: "{{ artifacts_dir }}/latest/bin/ssh-tunnel.sh"
+    flat: yes
+  tags:
+    - artifacts
 - name: Copy sample deployment file to user's home
   template:
     src: "deploy.yaml.j2"
-    dest: "~{{ ansible_user }}/deploy.yaml"
+    dest: "/home/{{ ansible_user }}/deploy.yaml"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
-
+- name: wait until kube-api is ready receive responses
+  become: false
+  shell: |
+    export KUBECONFIG="{{ kubeconfig_path }}"
+    kubectl get pods
+  retries: 10
+  delay: 3
+  register: result
+  until: result.rc == 0
+- name: Check if the /usr/local/bin/helm exists
+  stat:
+    path: /usr/local/bin/helm
+  register: helm_bin
 - name: Install helm
   unarchive:
     src: https://get.helm.sh/helm-v3.11.0-linux-amd64.tar.gz
@@ -52,17 +97,25 @@
     remote_src: true
   args:
     creates: /usr/local/bin/helm
+  tags: [helm]
+  when: helm_bin.stat.exists == False
 
-- name: Install nginx ingress controller 
-  command: helm install --kubeconfig ~{{ ansible_user }}/.kube/config my-release oci://ghcr.io/nginxinc/charts/nginx-ingress
+- name: Install nginx ingress controller
+  kubernetes.core.helm:
+    name: my-release
+    chart_ref: oci://ghcr.io/nginxinc/charts/nginx-ingress
+    release_namespace: default
+    create_namespace: true
+    kubeconfig_path: "{{ kubeconfig_path }}"
+    replace: true
+  tags: [helm]
 
 - name: install pre-requisites for kubernetes module
   apt:
-    name: 
-    - python3-openshift
-    - python3-kubernetes
+    name:
+      - python3-openshift
+      - python3-kubernetes
     state: present
-    
-- name: include task to deploy rancher 
+- name: include task to deploy rancher
   include_tasks: rancher_server.yaml
-
+  tags: rancher

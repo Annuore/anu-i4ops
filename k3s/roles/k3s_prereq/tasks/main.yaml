@@ -1,0 +1,38 @@
+
+--- 
+
+- name: Set SELinux to disabled state
+  selinux:
+    state: disabled
+  when: ansible_os_family == "RedHat"
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 router advertisements
+  sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    value: "2"
+    state: present
+    reload: yes
+
+- name: Install helm
+  unarchive:
+    src: https://get.helm.sh/helm-v3.11.0-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm

@@ -1,1 +1,1 @@
-kata_dir: ~{{ ansible_user }}/kata-containers
+kata_dir: /home/{{ ansible_user }}/kata-containers

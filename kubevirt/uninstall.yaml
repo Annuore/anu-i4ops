@@ -1,0 +1,14 @@
+---
+
+- hosts: master
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Check if the kubervirt namespace exists
+      shell: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config get namespace kubevirt --ignore-not-found
+      register: kubevirt_check
+      ignore_errors: true
+    - name: include the reset role when the kubevirt namespace exists
+      include_role:
+        name: reset
+      when: kubevirt_check.stdout != ''

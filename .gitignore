@@ -6,3 +6,6 @@ kubevirt/user-data
 kubevirt/test.yaml
 kubevirt/kubevirt-images-generator
 artifacts
+kube-config
+.history/
+logs

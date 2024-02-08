@@ -1,0 +1,12 @@
+--- 
+- hosts: master
+  become: yes
+  tasks: 
+    - name: check if k3s cluster exists
+      command: kubectl get ns kube-system --kubeconfig "{{ kubeconfig }}" --ignore-not-found
+      register: cluster_check
+      ignore_errors: true
+    - name: include role when namespace doesn't exist
+      include_role: 
+        name: install
+      when: cluster_check.stdout == ''

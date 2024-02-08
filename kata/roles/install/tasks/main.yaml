@@ -16,7 +16,7 @@
 
 - name: apply kata RBAC 
   kubernetes.core.k8s: 
-    kubeconfig: ~{{ ansible_user }}/.kube/config
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
     state: present 
     src: "{{ kata_dir }}/tools/packaging/kata-deploy/kata-rbac/base/kata-rbac.yaml"
 
@@ -28,7 +28,7 @@
   
 - name: wait for kata pods 
   kubernetes.core.k8s_info:
-    kubeconfig: ~{{ ansible_user }}/.kube/config
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
     api_version: apps/v1
     kind: DaemonSet 
     namespace: kube-system 
@@ -48,16 +48,16 @@
 - name: get kata runtime  url 
   get_url:  
     url: https://raw.githubusercontent.com/kata-containers/kata-containers/main/tools/packaging/kata-deploy/runtimeclasses/kata-runtimeClasses.yaml
-    dest: ~{{ ansible_user }}
+    dest: /home/{{ ansible_user }}
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0777
 
 - name: apply runtime classes
   kubernetes.core.k8s:
-    kubeconfig: ~{{ ansible_user }}/.kube/config
+    kubeconfig: /home/{{ ansible_user }}/.kube/config
     state: present 
-    src: ~{{ ansible_user }}/kata-runtimeClasses.yaml     
+    src: /home/{{ ansible_user }}/kata-runtimeClasses.yaml     
 
 
     

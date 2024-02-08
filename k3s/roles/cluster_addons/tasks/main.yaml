@@ -1,0 +1,32 @@
+
+- name: install python3 
+  become: yes
+  ansible.builtin.package:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: install pre-requisites
+  apt:
+    name: 
+    - python3-openshift
+    - python3-kubernetes
+    state: present
+
+
+- name: Install nginx ingress controller 
+  kubernetes.core.helm:
+    name: my-release
+    chart_ref: oci://ghcr.io/nginxinc/charts/nginx-ingress
+    release_namespace: default
+    create_namespace: true
+    kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
+  tags: [helm]
+
+- name: Install argocd 
+  include_tasks: argocd.yaml
+
+- name: Install rancher management server 
+  include_tasks: rancher_server.yaml
+

@@ -3,7 +3,7 @@
 - name: delete kubevirt operator and custom resource
   become: false  
   shell: | 
-    export KUBECONFIG=$HOME/.kube/config
+    export KUBECONFIG=/home/{{ ansible_user }}/.kube/config
     export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt) 
     kubectl delete -n kubevirt kubevirt kubevirt --wait=true 
     kubectl delete apiservices v1.subresources.kubevirt.io # this needs to be deleted to avoid stuck terminating namespaces
@@ -11,7 +11,6 @@
     kubectl delete validatingwebhookconfigurations virt-operator-validator
     kubectl delete validatingwebhookconfigurations virt-api-validator   
     kubectl delete -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-operator.yaml 
-  when: ansible_host == hostvars[groups['master'][0]]['ansible_host'] 
 
 - name: remove libguestfs lib 
   apt: 
@@ -24,7 +23,7 @@
     state: absent 
   with_items: 
     - /usr/local/bin/virtctl
-    - ~{{ ansible_user }}/vm.yaml
-    - ~{{ ansible_user }}/vmi.yaml
-    - - ~{{ ansible_user }}/virtctl
+    - /home/{{ ansible_user }}/vm.yaml
+    - /home/{{ ansible_user }}/vmi.yaml
+    - /home/{{ ansible_user }}/virtctl
 

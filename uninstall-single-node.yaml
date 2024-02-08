@@ -1,0 +1,3 @@
+- import_playbook: kubevirt/uninstall.yaml
+- import_playbook: longhorn/uninstall.yaml
+- import_playbook: k3s_quickstart/uninstall.yaml

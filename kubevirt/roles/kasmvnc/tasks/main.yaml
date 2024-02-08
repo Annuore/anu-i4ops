@@ -1,0 +1,90 @@
+- name: Install packages
+  apt:
+    name:
+      - mate-desktop-environment-extras
+      - libappindicator1
+    state: present
+
+- name: Download KasmVNC
+  get_url:
+    url: https://github.com/kasmtech/KasmVNC/releases/download/v1.2.0/kasmvncserver_jammy_1.2.0_amd64.deb
+    dest: /home/{{ ansible_user }}/kasmvncserver_jammy_1.2.0_amd64.deb
+
+- name: Install KasmVNC
+  apt:
+    deb: /home/{{ ansible_user }}/kasmvncserver_jammy_1.2.0_amd64.deb
+
+- name: Add ssl-cert group and add user to the group
+  block:
+  - group:
+      name: ssl-cert
+      state: present
+  - user:
+      name: "{{ ansible_user }}"
+      groups: ssl-cert
+      append: yes
+
+- name: Install expect tool
+  apt: 
+    name: expect
+    state: present
+
+- name: Running KasmVNC with expect
+  expect:
+    command: vncserver
+    responses:
+      'Enter username:': "{{ ansible_user }}"
+      'Enter password :': "{{ user_password }}"
+      'Verify password :': "{{ user_password }}"
+
+- name: Create xstartup file
+  blockinfile:
+    path: /home/{{ ansible_user }}/.vnc/xstartup
+    create: yes
+    block: |
+      #!/bin/sh
+      unset SESSION_MANAGER
+      unset DBUS_SESSION_BUS_ADDRESS
+      xrdb $HOME/.Xresources
+      xsetroot -solid grey
+      gnome-session --session=ubuntu &
+      startxfce4 &
+      su - anu -c "vncserver :1 -geometry 1920x1080"
+
+- name: Set permissions for xstartup
+  file:
+    path: /home/{{ ansible_user }}/.vnc/xstartup
+    mode: '0755'
+  
+- name: Change owner of .Xauthority
+  file:
+    path: /home/{{ ansible_user }}/.Xauthority
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Update kasmvnc.yaml
+  replace:
+    path: /etc/kasmvnc/kasmvnc.yaml
+    regexp: '#network:'
+    replace: 'network:'
+
+- name: Install Zerotier
+  shell: |
+    curl -s https://install.zerotier.com | bash
+  args:
+    executable: /bin/bash
+
+- name: Join Zerotier Network
+  command: zerotier-cli join a09acf0233a8851b
+
+- name: Check Zerotier Network
+  command: zerotier-cli list-network
+    register: zerotier_status
+
+- name: Print Zerotier Status
+  debug:
+    msg: "{{ zerotier_status.stdout }}"
+
+
+
+  

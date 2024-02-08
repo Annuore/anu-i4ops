@@ -1,30 +1,85 @@
-# K3s Cluster Ansible Playbook
+# I4ops cloud agnostic infrastructure
 
-## In this repo
-There are additional projects in this repo, they include:
-- [K3s single node cluster](k3s_quickstart) which installs a single node cluster
-- [Kubevirt](kubevirt) which deploys kubevirt into the cluster
--[Longhorn](longhorn) which deploys longhorn for storage and persistence
+## About i4ops
 
+- Briefing (21 min) https://www.youtube.com/watch?v=QrHHuFw-AHI
+- Demo1 (6 min) https://youtu.be/MPvPiDJSvIo
+- business brief (3 min) https://youtu.be/bsn_7L-9Nps
+- https://youtu.be/RhH8ASixAqE -- Wikipedia List Data Breach (2min)
 
 ## On this Page
 - [**Project Overview**](#project)
 - [**Project Workflow or Sequence**](#flow)
-- [**Included Playbooks**](#ip)
-- [**Roles**](#roles)
 - [**Instructions**](#instructions)
-- [**Network Overview**](#net)
 - [**Resources**](#res)
 
-
 ## Project Overview <a id='project'></a>
-This repo creates a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI). It also includes a [Kubevirt](./kubevirt) playbook that deploys kubevirt into the cluster. For each additional projects like the [singlenode k3s cluster](https://github.com/Annuore/anu-i4ops/blob/k3s/k3s_quickstart/README.md), [kubevirt](https://github.com/Annuore/anu-i4ops/blob/k3s/kubevirt/README.md), and [longhorn](https://github.com/Annuore/anu-i4ops/blob/k3s/longhorn/README.md), there's an available readme which will walk you through each project.
+This repo contains ansible playbooks for creating a [k3s](https://docs.k3s.io/) kubernetes cluster with [kube-vip](https://kube-vip.io/docs/installation/). It includes [Argocd](https://argo-cd.readthedocs.io/en/stable/) for gitops and [Rancher management server](https://ranchermanager.docs.rancher.com/v2.5/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster) for container or cluster management(UI). It also includes a [Kubevirt](./kubevirt) playbook that deploys kubevirt into the cluster. For each additional projects like the [singlenode k3s cluster](https://github.com/hubbertsmith/anu-i4ops/blob/k3s/k3s_quickstart/README.md), [kubevirt](https://github.com/hubbertsmith/anu-i4ops/blob/k3s/kubevirt/README.md), and [longhorn](https://github.com/hubbertsmith/anu-i4ops/blob/k3s/longhorn/README.md), there's an available readme which will walk you through each project.
+
+This repo has the following directory structure (navigate to documentation by clicking the link):
+
+- [i4kmod](i4kmod/readme.md)
+- [k3s](k3s/README.md)
+- [k3s_quickstart](k3s_quickstart/README.md)
+- [kubevirt](kubevirt/README.md)
+- [longhorn](longhorn/README.md)
+
+Additional documentation:
+- [zerotier](docs/docs/zerotier.md) - accessing nodes via VPN
+- [ansible](docs/ansible.md) - ansible installation
+- [artifacts](docs/kubectl-access.md) - using artifacts after deploying k8s cluster
 
 ## Project Workflow or Sequence <a id='flow'></a>
-- setup hosts.ini
-- First you install the k3s cluster (follow instructions below on how to install) or cd into k3s_quickstart to create a single-node k3s cluster.
-- Install [kubevirt](https://github.com/Annuore/anu-i4ops/blob/k3s/kubevirt/README.md)
-- Then install [longhorn](https://github.com/Annuore/anu-i4ops/blob/k3s/longhorn/README.md) for persistence
+- install required ansible collections `ansible-galaxy install -r requirements.yml`
+- setup the `hosts.ini` file
+- connect to the environment by using zerotier
+
+**single node cluster:**
+- to install: `ansible-playbook install-single-node.yaml -i hosts.ini -k -K`
+- to uninstall: `ansible-playbook uninstall-single-node.yaml -i hosts.ini -k -K`
+
+Note: Your inventory (`hosts.ini`) must include at the same host in `master` and in `worker` section.
+
+
+**multi node cluster:**
+- to install: `ansible-playbook install.yaml -i hosts.ini -k -K`
+- to uninstall: `ansible-playbook uninstall.yaml -i hosts.ini -k -K`
+
+Note: Your inventory (hosts.ini) must include at least one master and one worker node.
+
+## Selective playbook deployment
+To install:
+```
+ansible-playbook `<playbook-name>/install.yaml` -i hosts.ini -k -K
+```
+
+For example:
+```
+ansible-playbook k3s_quickstart/install.yaml -i hosts.ini -k -K
+```
+
+To uninstall:
+```
+ansible-playbook `<playbook-name>/uninstall.yaml` -i hosts.ini -k -K
+```
+
+For example:
+```
+ansible-playbook k3s_quickstart/uninstall.yaml -i hosts.ini -k -K
+```
+
+## Selective task/role deployment
+If a given ansible task/role contains `tags` property then you can instruct ansible to install only those marching a given tag.
+For example:
+```
+ansible-playbook k3s/install.yaml -i hosts.ini --tags=cluster_addons
+```
+
+## Accessing kubernetes cluster from your host
+After successful deployment
+```
+export KUBECONFIG=artifacts/k0s-kubeconfig.yaml
+```
 
 ## Setup hosts.ini and servers <a id='ip'></a>
 [`setup hosts.ini. you need server/hostname/host IP /user (i4demo)/pass(i4demo) `](hosts.ini):
@@ -42,79 +97,48 @@ master
 ; Optional, if you want your vars in the host file
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3
-; k3s_version=v1.22.3+k3s1
+; k3s_version=v1.25.10+k3s1
 ; systemd_dir= /etc/systemd/system
 ; master_ip="{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 ; extra_server_args=""
 ; extra_agent_args="
 ```
-
-## Included Playbooks <a id='ip'></a>
-[`install_k3s_cluster.yaml`](install_k3s_cluster.yaml):
-```ShellSession
-ansible-playbook install_k3s_cluster.yaml -i hosts.ini -k -K
-``` 
-Optionally, `--ask-pass` to ask for ssh password, and `-vv` for detailed verbose or output.
-Your inventory must include at least one `master` and one `worker` node. To get a highly available control plane, more `controller` nodes can be added to the cluster. To add more nodes to the exsiting cluster, visit the k3s [HA embedded etcd](https://docs.k3s.io/datastore/ha-embedded) for details.
-
-[`delete_k3s_cluster.yaml`](delete_k3s_cluster.yaml):
-```ShellSession
-ansible-playbook delete_k3s_cluster.yaml -i hosts -k -K
-```
-This playbook deletes k3s all its files, directories and services from all hosts.
-
-## Roles <a id='roles'></a>
-* [**k3s-download**](roles/k3s_download)
-This role installs the K3s binary. 
-* [**k3s-prereq**](roles/k3s_prereq)
-This role installs all softwares and dependencies required for K3s to run.
-* [**k3s_cluster**](roles/k3s_cluster)
-This role deploys the K3s cluster. It starts the k3s service on the master node, generates a join token for the workers and then adds the workers to the cluster. It also generates the kube-vip RBAC manifest and adds the daemonset manifest to the auto-deploy directory.
-* [**cluster_addons**](roles/cluster_addons)
-This role install argocd and rancher management server via helm. 
-* [**reset**](roles/reset)
-This role deletes the cluster, directories, and stops K3s service on all nodes.
-
 ## Instructions <a id='instructions'></a>
 - Edit the [hosts.ini](hosts.ini) file to add your hosts. Change the `ansible_user` and `ansible_host` to fit your environment. This file must include at least one `master` and one `worker` node.
 
-- Generate your ssh key . To add your private key to ssh agent, run, 
+- Generate your ssh key . To add your private key to ssh agent, run,
 ```ShellSession
 ssh-agent bash
 sudo ssh-add <path/to/private/key>
 ssh-copy-id -i <path/to/public/key> hostname@remote-server-ip
-``` 
+```
 Alternatively, you can add the path using `private_key_file` to ansible config file `/etc/ansible/ansible.cfg` under `[defaults]`.
-- Run the [Playbook!](https://github.com/Annuore/anu-i4ops/tree/k3s#included-playbooks-)
-- To access the cluster run 
+- Run the [Playbook!](https://github.com/hubbertsmith/anu-i4ops/tree/k3s#included-playbooks-)
+- To access the cluster run
 ``` ShellSession
-export KUBECONFIG=$HOME/.kube/config
-``` 
+export KUBECONFIG=/home/{{ ansible_user}}/.kube/config
+```
 
 - Rancher requires a `hostname` variable. You can use a domain name or use any name and add it to your `/etc/hosts` file.
-- To get argocd's initial password for admin user. 
+- To get argocd's initial password for admin user.
 ```ShellSession
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-``` 
+```
 
-- To get rancher's initial password for admin user. 
+- To get rancher's initial password for admin user.
 ```ShellSession
 kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}
-``` 
+```
 
 ### Optional
 - You can patch the argocd service to use the load balancer service type.
 ```ShellSession
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-``` 
-[Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI.  
+```
+[Click here](https://argo-cd.readthedocs.io/en/stable/getting_started/) for more info about the argocd configuration and how to access the UI.
 [Click here](https://docs.k3s.io/advanced) for k3s advanced configuration.
 
-## Network Overview <a id='net'></a>
-The k3s cluster automatically comes with traefik for ingress and cluster network which is disabled during this cluster installation (check server arguments passed to install command). The traefik ingress is still functional but nginx ingress controller is bootstrapped with the cluster and should be used by specifying the value `nginx` under spec.ingressClassName in your ingress yaml definition.
-- [**Kubevip**](https://kube-vip.io/docs/usage/k3s/) for virtual IP and load balancing. Kubevip assigns an external IP to a loadbalancer type of service which allows external traffic into the cluster. 
-- [**Nginx**](https://docs.nginx.com/nginx-ingress-controller/) for ingress 
-- **Traefik** is disabled.
+
 
 
 ## Resources <a id='res'></a>

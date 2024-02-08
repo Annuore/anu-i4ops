@@ -4,7 +4,11 @@ kube_vip_tag_version: "v0.6.0"
 # apiserver_endpoint is virtual ip-address which will be configured on each master
 # apiserver_endpoint: "192.168.30.201"
 ansible_user: i4
+user_password: Test123
 systemd_dir: /etc/systemd/system
 master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 extra_server_args: ""
 extra_agent_args: ""
+artifacts_dir: "{{ inventory_dir }}/artifacts"
+kubeconfig_path: "/home/{{ ansible_user }}/.kube/config"
+

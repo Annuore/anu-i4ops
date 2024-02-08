@@ -1,0 +1,9 @@
+- name: K3s
+  import_playbook: k3s_quickstart/install.yaml
+  tags: k3s
+- name: Longhorn
+  import_playbook: longhorn/install.yaml
+  tags: longhorn
+- name: Kubevirt
+  import_playbook: kubevirt/install.yaml
+  tags: kubevirt

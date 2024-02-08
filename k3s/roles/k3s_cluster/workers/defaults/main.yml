@@ -1,0 +1,2 @@
+---
+artifacts_dir: "{{ inventory_dir }}/artifacts"
