@@ -116,7 +116,7 @@ Alternatively, you can add the path using `private_key_file` to ansible config f
 - Run the [Playbook!](https://github.com/hubbertsmith/anu-i4ops/tree/k3s#included-playbooks-)
 - To access the cluster run
 ``` ShellSession
-export KUBECONFIG=/home/{{ ansible_user}}//.kube/config
+export KUBECONFIG=/home/{{ ansible_user}}/.kube/config
 ```
 
 - Rancher requires a `hostname` variable. You can use a domain name or use any name and add it to your `/etc/hosts` file.
